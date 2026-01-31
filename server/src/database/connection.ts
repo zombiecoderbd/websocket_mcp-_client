@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import { Logger } from '../utils/logger';
 
 const logger = new Logger();
@@ -19,8 +19,8 @@ export async function initializeDatabase(config: DatabaseConfig): Promise<mysql.
     try {
         pool = mysql.createPool({
             host: config.host || process.env.DB_HOST || 'localhost',
-            user: config.user || process.env.DB_USER || 'root',
-            password: config.password || process.env.DB_PASSWORD || '',
+            user: config.user || process.env.DB_USER || 'u-root',
+            password: config.password || process.env.DB_PASSWORD || 'p-105585',
             database: config.database || process.env.DB_NAME || 'uas_admin',
             waitForConnections: config.waitForConnections ?? true,
             connectionLimit: config.connectionLimit || 10,

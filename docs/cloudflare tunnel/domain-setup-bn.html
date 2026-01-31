@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডোমেইন সেটআপ গাইড - বাংলা</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kalpurush', 'SolaimanLipi', 'Noto Sans Bengali', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            font-size: 1.8rem;
+        }
+
+        .card h3 {
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            font-size: 1.4rem;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+        }
+
+        .success-box {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .step-container {
+            counter-reset: step-counter;
+            margin: 25px 0;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .step:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            background: #007bff;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlight {
+            background: #fff9c4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .domain-list {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .domain-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .nameserver-box {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            border: 2px dashed #4caf50;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 ডোমেইন সেটআপ গাইড</h1>
+            <p>zombiecoder.my.id ডোমেইন এবং এর সাবডোমেইনগুলো কনফিগার করুন</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> আমাদের ডোমেইন সম্পর্কে</h2>
+            
+            <div class="domain-list">
+                <h3>🌐 মূল ডোমেইন:</h3>
+                <div class="domain-item">
+                    <strong>zombiecoder.my.id</strong>
+                    <p>এটি হবে আপনার প্রধান ওয়েবসাইটের ঠিকানা</p>
+                </div>
+                
+                <h3 style="margin-top: 20px;">🔗 সাবডোমেইনগুলো:</h3>
+                <div class="domain-item">
+                    <strong>app.zombiecoder.my.id</strong>
+                    <p>আপনার অ্যাপ্লিকেশন বা ওয়েব এপ্লিকেশনের জন্য</p>
+                </div>
+                
+                <div class="domain-item">
+                    <strong>zombie.zombiecoder.my.id</strong>
+                    <p>বিশেষ সার্ভিস বা রোবট সম্পর্কিত কাজের জন্য</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-network-wired"></i> নেমসার্ভার তথ্য:</h3>
+                <p>আমাদের ক্লাউডফ্লেয়ারের নেমসার্ভার ব্যবহার করতে হবে:</p>
+                <div class="nameserver-box">
+                    carmelo.ns.cloudflare.com<br>
+                    eloise.ns.cloudflare.com
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-tasks"></i> ধাপে ধাপে সেটআপ প্রক্রিয়া</h2>
+            
+            <div class="step-container">
+                <div class="step">
+                    <h3>ডোমেইন রেজিস্ট্রারে লগইন করুন</h3>
+                    <p>প্রথমে আপনার ডোমেইন রেজিস্ট্রার (যেখান থেকে zombiecoder.my.id কিনেছেন) এ লগইন করুন। সাধারণত এটি Godaddy, Namecheap, বা অন্য কোনো কোম্পানি হতে পারে।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>নেমসার্ভার আপডেট করুন</h3>
+                    <p>ডোমেইন ম্যানেজমেন্ট সেকশনে গিয়ে নেমসার্ভার পরিবর্তন করুন:</p>
+                    <div class="nameserver-box">
+                        carmelo.ns.cloudflare.com<br>
+                        eloise.ns.cloudflare.com
+                    </div>
+                    <div class="warning-box">
+                        <p><strong>⚠️ গুরুত্বপূর্ণ:</strong> এই কাজটি করার পর DNS প্রপাগেশনের জন্য 24-48 ঘন্টা সময় লাগতে পারে।</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>ক্লাউডফ্লেয়ার অ্যাকাউন্ট তৈরি করুন</h3>
+                    <p>cloudflare.com এ গিয়ে একটি ফ্রি অ্যাকাউন্ট তৈরি করুন। আপনার ইমেইল এবং পাসওয়ার্ড দিয়ে সাইন আপ করুন।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>ডোমেইন ক্লাউডফ্লেয়ারে যোগ করুন</h3>
+                    <p>ক্লাউডফ্লেয়ার ড্যাশবোর্ডে গিয়ে "Add a Site" অপশন নির্বাচন করুন এবং zombiecoder.my.id লিখুন।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>DNS রেকর্ড চেক করুন</h3>
+                    <p>ক্লাউডফ্লেয়ার স্বয়ংক্রিয়ভাবে আপনার বর্তমান DNS রেকর্ডগুলো ইমপোর্ট করবে। সবকিছু সঠিকভাবে ইমপোর্ট হয়েছে কিনা চেক করুন।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>ক্লাউডফ্লেয়ারের নেমসার্ভার কনফার্ম করুন</h3>
+                    <p>ক্লাউডফ্লেয়ার আপনাকে দুটি নেমসার্ভার দেবে। নিশ্চিত করুন যে এগুলো আপনি ডোমেইন রেজিস্ট্রারে ঠিকভাবে সেট করেছেন:</p>
+                    <div class="nameserver-box">
+                        carmelo.ns.cloudflare.com<br>
+                        eloise.ns.cloudflare.com
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>সাবডোমেইন যোগ করুন</h3>
+                    <p>DNS সেকশনে গিয়ে নিচের সাবডোমেইনগুলো যোগ করুন:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li><strong>app.zombiecoder.my.id</strong> - CNAME রেকর্ড</li>
+                        <li><strong>zombie.zombiecoder.my.id</strong> - CNAME রেকর্ড</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <h3>SSL/TLS সেটিংস কনফিগার করুন</h3>
+                    <p>SSL/TLS সেকশনে গিয়ে মোডটি সেট করুন: <span class="highlight">Full (strict)</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-shield-alt"></i> নিরাপত্তা সেটিংস</h2>
+            
+            <div class="info-box">
+                <h3>WAF (ওয়েব অ্যাপ্লিকেশন ফায়ারওয়াল)</h3>
+                <p>সিকিউরিটি সেকশনে গিয়ে WAF এনাবল করুন। এটি আপনার ওয়েবসাইটকে ম্যালওয়্যার এবং অন্যান্য আক্রমণ থেকে সুরক্ষিত রাখবে।</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>রেট লিমিটিং</h3>
+                <p>সিকিউরিটি → Rate Limiting এ গিয়ে রেট লিমিট সেট করুন। এটি একই সময়ে অতিরিক্ত রিকোয়েস্ট থেকে আপনার সাইটকে রক্ষা করবে।</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-check-circle"></i> সফল সেটআপের পর</h2>
+            
+            <div class="success-box">
+                <h3>✅ চেকলিস্ট:</h3>
+                <ul style="margin-top: 10px;">
+                    <li>ডোমেইন রেজিস্ট্রারে নেমসার্ভার আপডেট হয়েছে</li>
+                    <li>ক্লাউডফ্লেয়ারে ডোমেইন যোগ হয়েছে</li>
+                    <li>সব DNS রেকর্ড সঠিকভাবে কনফিগার হয়েছে</li>
+                    <li>SSL/TLS সেটিংস ঠিক আছে</li>
+                    <li>সাবডোমেইনগুলো কাজ করছে</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ সতর্কতা:</h3>
+                <ul style="margin-top: 10px;">
+                    <li>DNS প্রপাগেশনের জন্য 24-48 ঘন্টা অপেক্ষা করুন</li>
+                    <li>সব সেটিংস ঠিকমতো করা হয়েছে কিনা পরীক্ষা করুন</li>
+                    <li>ব্যাকআপ রেকর্ড রাখুন</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-life-ring"></i> সমস্যা সমাধান</h2>
+            
+            <div class="info-box">
+                <h3>সাধারণ সমস্যা এবং সমাধান:</h3>
+                <ul style="margin-top: 10px;">
+                    <li><strong>ডোমেইন কাজ করছে না:</strong> DNS প্রপাগেশনের জন্য অপেক্ষা করুন</li>
+                    <li><strong>SSL সার্টিফিকেট এরর:</strong> SSL/TLS মোড "Full (strict)" এ সেট করুন</li>
+                    <li><strong>সাবডোমেইন কাজ করছে না:</strong> DNS রেকর্ড সঠিকভাবে যোগ হয়েছে কিনা চেক করুন</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Cloudflare Tunnel Documentation | বাংলা ডোমেইন সেটআপ গাইড</p>
+        </div>
+    </div>
+</body>
+</html>

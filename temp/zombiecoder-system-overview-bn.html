@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZombieCoder System Overview - বাংলা</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Kalpurush', 'SolaimanLipi', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            direction: ltr;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border-radius: 15px;
+            background: var(--light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .section-title {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: "▶";
+            color: var(--primary);
+        }
+        
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 0.3rem 0;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        
+        .status-planned {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .feature-list {
+            padding-left: 1.5rem;
+        }
+        
+        .feature-list li {
+            margin: 0.8rem 0;
+            position: relative;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .roadmap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .roadmap-icon {
+            font-size: 1.5rem;
+            min-width: 40px;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+        }
+        
+        .roadmap-content h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.7rem;
+            top: 1.5rem;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary);
+        }
+        
+        .highlight-box {
+            background: linear-gradient(45deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .highlight-box h3 {
+            color: #0284c7;
+            margin-bottom: 1rem;
+        }
+        
+        .quote-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+        
+        .architecture-diagram {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧟‍♂️ ZombieCoder System</h1>
+            <p>যেখানে কোড ও কথা বলে - Unified Agent System Overview</p>
+            <p><strong>Owner:</strong> Sahon Srabon | <strong>Organization:</strong> Developer Zone</p>
+        </header>
+        
+        <div class="content">
+            
+            <!-- System Identity Section -->
+            <section class="section">
+                <h2 class="section-title">🔐 সিস্টেম পরিচয় ও মালিকানা</h2>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">🎯 সিস্টেমের মূল পরিচয়</h3>
+                        <p><strong>নাম:</strong> ZombieCoder</p>
+                        <p><strong>স্লোগান:</strong> যেখানে কোড ও কথা বলে</p>
+                        <p><strong>ভার্সন:</strong> 1.0.0</p>
+                        <p><strong>লাইসেন্স:</strong> Proprietary - Local Freedom Protocol</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">👨‍💻 ডেভেলপার পরিচয়</h3>
+                        <p><strong>নাম:</strong> Sahon Srabon</p>
+                        <p><strong>সংস্থা:</strong> Developer Zone</p>
+                        <p><strong>ঠিকানা:</strong> 235 South Pirarbag, Amtala Bazar, Mirpur - 60 feet</p>
+                        <p><strong>লোকেশন:</strong> Dhaka, Bangladesh</p>
+                        <p><strong>ইমেইল:</strong> infi@zombiecoder.my.id</p>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <h3>🛡️ মেধা সুরক্ষা প্রোটোকল</h3>
+                    <p>সিস্টেমের প্রতিটি রিকোয়েস্ট, প্রসেস এবং ডেটা হ্যান্ডলিং মালিকের সুস্পষ্ট পরিচয় বহন করে। এটি একটি ডিজিটাল ডিএনএ হিসেবে কাজ করে যা কোনোভাবেই মুছে ফেলা যাবে না।</p>
+                </div>
+            </section>
+            
+            <!-- Current System Status -->
+            <section class="section">
+                <h2 class="section-title">📊 বর্তমান সিস্টেমের অবস্থা</h2>
+                
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3 class="card-title">🤖 এজেন্ট সিস্টেম</h3>
+                        <span class="status-badge status-active">সক্রিয়</span>
+                        <ul class="feature-list">
+                            <li>৫টি এজেন্ট চলছে</li>
+                            <li>মাস্টার অর্কেস্ট্রেটর (ID: 2)</li>
+                            <li>চ্যাট অ্যাসিস্ট্যান্ট (ID: 3)</li>
+                            <li>কোড এডিটর এজেন্ট (ID: 1,4,5)</li>
+                            <li>রিয়েল-টাইম মনিটরিং</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🦙 ওলামা মডেল</h3>
+                        <span class="status-badge status-active">সক্রিয়</span>
+                        <ul class="feature-list">
+                            <li>৬টি মডেল লোডেড</li>
+                            <li>লোকাল ডকার এনভায়রনমেন্ট</li>
+                            <li>ডায়নামিক ডিসকভারি</li>
+                            <li>অটোমেটেড হেলথ চেক</li>
+                            <li>মেমরি অপ্টিমাইজেশন</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🌐 প্রক্সি সার্ভার</h3>
+                        <span class="status-badge status-active">সক্রিয়</span>
+                        <ul class="feature-list">
+                            <li>পোর্ট: localhost:8000</li>
+                            <li>API রাউটিং ও লোড ব্যালেন্সিং</li>
+                            <li>এজেন্ট কমিউনিকেশন</li>
+                            <li>মেমরি সিস্টেম কন্ট্রোল</li>
+                            <li>এডিটর ইন্টিগ্রেশন</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="grid grid-2" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h3 class="card-title">☁️ ক্লাউডফ্লেয়ার টানেল</h3>
+                        <span class="status-badge status-active">সক্রিয় (4 কানেকশন)</span>
+                        <p><strong>ডোমেইন:</strong> zombiecoder.my.id</p>
+                        <p><strong>টাইপ:</strong> হাইব্রিড (লোকাল + ক্লাউড)</p>
+                        <p><strong>সিকিউরিটি:</strong> এন্ড-টু-এন্ড এনক্রিপশন</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">📝 এডিটর ইন্টিগ্রেশন</h3>
+                        <span class="status-badge status-in-progress">কানেকশন প্রয়োজন</span>
+                        <p><strong>পোর্ট:</strong> localhost:3001</p>
+                        <p><strong>স্ট্যাটাস:</strong> কনফিগারেশন চলছে</p>
+                        <p><strong>ফিচার:</strong> VS Code ইন্টিগ্রেশন</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Architecture Overview -->
+            <section class="section">
+                <h2 class="section-title">🏗️ সিস্টেম আর্কিটেকচার</h2>
+                
+                <div class="architecture-diagram">
+                    <h3 style="color: #60a5fa; margin-bottom: 1rem;">🎯 MCP-Editor Agent Architecture</h3>
+                    <pre>
+MCP Core (Leader) ←→ Editor Bridge (Client) ←→ Agent Layer (Worker)
+    ↓                    ↓                        ↓
+Central Intelligence    Thin UI Client          Execution Engine
+Decision Making         Event Source            Task Execution
+Context Management      Request Routing         Tool Usage
+Protocol Gatekeeper     Metadata Collection     Status Tracking
+                    </pre>
+                </div>
+                
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div style="background: #3b82f6; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">1</div>
+                        <div>
+                            <strong>ইউজার ইন্টারফেস (Editor)</strong>
+                            <p>VS Code, Web Editor, Mobile - যেকোনো প্ল্যাটফর্ম থেকে ইনপুট</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-step">
+                        <div style="background: #10b981; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">2</div>
+                        <div>
+                            <strong>Editor Bridge</strong>
+                            <p>ইভেন্ট ক্যাপচার, মেটাডেটা জেনারেশন, রিকোয়েস্ট নরমালাইজেশন</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-step">
+                        <div style="background: #8b5cf6; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">3</div>
+                        <div>
+                            <strong>MCP Core (মূল মস্তিষ্ক)</strong>
+                            <p>ডিসিশন রাউটিং, কনটেক্সট ম্যানেজমেন্ট, প্রোটোকল হ্যান্ডলিং</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-step">
+                        <div style="background: #f59e0b; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">4</div>
+                        <div>
+                            <strong>Agent Layer</strong>
+                            <p>এক্সিকিউশন ইঞ্জিন, টুল ইউজেজ, স্ট্যাটাস ট্র্যাকিং</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-step">
+                        <div style="background: #ef4444; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">5</div>
+                        <div>
+                            <strong>লোকাল/ক্লাউড মডেল</strong>
+                            <p>Ollama (লোকাল), Cloud APIs (Google, OpenAI, etc.)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Key Features -->
+            <section class="section">
+                <h2 class="section-title">🚀 প্রধান ফিচারসমূহ</h2>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">🧠 ইন্টেলিজেন্ট এজেন্ট সিস্টেম</h3>
+                        <ul class="feature-list">
+                            <li>মাল্টি-এজেন্ট অর্কেস্ট্রেশন</li>
+                            <li>পার্সোনা-বাউন্ড এক্সিকিউশন</li>
+                            <li>টুল অ্যাওয়ারনেস এবং পারমিশন কন্ট্রোল</li>
+                            <li>রিয়েল-টাইম স্ট্যাটাস ট্র্যাকিং</li>
+                            <li>ডায়নামিক টাস্ক ডিস্ট্রিবিউশন</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🔗 ইউনিফাইড মডেল ম্যানেজমেন্ট</h3>
+                        <ul class="feature-list">
+                            <li>লোকাল এবং ক্লাউড মডেল ইউনিফিকেশন</li>
+                            <li>অটোমেটেড হেলথ চেকিং</li>
+                            <li>লোড ব্যালেন্সিং এবং ফেইলওভার</li>
+                            <li>পারফরমেন্স মেট্রিক্স মনিটরিং</li>
+                            <li>কস্ট এবং কোটা ম্যানেজমেন্ট</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🛡️ সিকিউরিটি এবং ট্রাস্ট</h3>
+                        <ul class="feature-list">
+                            <li>হার্ড-কোডেড সিস্টেম আইডেন্টিটি</li>
+                            <li>এন্ড-টু-এন্ড এনক্রিপশন</li>
+                            <li>অ্যাক্সেস কন্ট্রোল লিস্ট (ACL)</li>
+                            <li>অডিট লগিং এবং ট্রেসেবিলিটি</li>
+                            <li>মেধা সুরক্ষা প্রোটোকল</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🎯 ডেভেলপার প্রোডাক্টিভিটি</h3>
+                        <ul class="feature-list">
+                            <li>VS Code ইন্টিগ্রেশন</li>
+                            <li>রিয়েল-টাইম কোড এডিটিং</li>
+                            <li>ইন্টেলিজেন্ট কোড কমপ্লিশন</li>
+                            <li>অটোমেটেড ডিবাগিং</li>
+                            <li>কনটেক্সট-অওয়ার হেল্প</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Development Roadmap -->
+            <section class="section">
+                <h2 class="section-title">🛣️ ডেভেলপমেন্ট রোডম্যাপ</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>🎯 Phase 1: ডিটারমিনিস্টিক কোর (বর্তমান)</h3>
+                        <p><strong>গোল:</strong> একটি নির্ভরযোগ্য, ট্রেসেবল, সিঙ্গেল-টার্ন ট্রানজেকশন লুপ প্রতিষ্ঠা</p>
+                        <p><strong>ফ্লো:</strong> Editor (Event) → MCP (Decision) → Agent (Execution) → Text Response</p>
+                        <p><strong>কী ফিচারস:</strong> ডিটারমিনিস্টিক আউটপুট, ট্রেসেবিলিটি, সিঙ্গেল-এজেন্ট/টুল এক্সিকিউশন</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>🚀 Phase 2: গোল স্টেট (ভবিষ্যত ভিশন)</h3>
+                        <p><strong>গোল:</strong> একটি সম্পূর্ণ স্বয়ংক্রিয়, প্রেডিক্টিভ, এবং সহযোগী সিস্টেম অর্জন</p>
+                        <p><strong>প্রধান ফিচারস:</strong></p>
+                        <ul class="feature-list">
+                            <li>মাল্টি-এজেন্ট কোঅর্ডিনেশন</li>
+                            <li>টুল গ্রাফিং/চেইনিং</li>
+                            <li>প্রেডিক্টিভ অ্যাকশন</li>
+                            <li>অ্যাডভান্সড মেমরি সিস্টেম</li>
+                            <li>মাল্টি-মোডাল ইন্টিগ্রেশন (অডিও, ভিডিও)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>🔧 Phase 3: এন্টারপ্রাইজ স্কেল</h3>
+                        <p><strong>গোল:</strong> এন্টারপ্রাইজ-গ্রেড স্কেলেবিলিটি এবং কাস্টমাইজেশন</p>
+                        <p><strong>ফিচারস:</strong> মাইক্রোসার্ভিস আর্কিটেকচার, অটো-স্কেলিং, এন্টারপ্রাইজ সিকিউরিটি, কাস্টম পার্সোনা</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- MCP Implementation Plan -->
+            <section class="section">
+                <h2 class="section-title">⚙️ MCP বাস্তবায়ন পরিকল্পনা</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 মিনিমাম ভায়েবল প্রোডাক্ট (MVP)</h3>
+                    <p>আমাদের প্রথম লক্ষ্য হলো একটি মিনিমাম ভায়েবল প্রোডাক্ট তৈরি করা যা ডেভেলপারদের প্রোডাক্টিভিটি বাড়াবে এবং আমাদের চাহিদা অনুযায়ী সব মৌলিক ফিচারসমূহ কভার করবে।</p>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">📋 MVP কম্পোনেন্টস</h3>
+                        <ul class="feature-list">
+                            <li>মূল MCP কোর (ডিসিশন মেকিং)</li>
+                            <li>সিম্পল এজেন্ট এক্সিকিউটর</li>
+                            <li>ভিএস কোড এক্সটেনশন ব্রিজ</li>
+                            <li>লোকাল মডেল ইন্টিগ্রেশন (ওলামা)</li>
+                            <li>মৌলিক ডকুমেন্টেশন টুল</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🎯 MVP আউটপুট এবং উপকারিতা</h3>
+                        <ul class="feature-list">
+                            <li>এডিটর থেকে সরাসরি AI কোডিং</li>
+                            <li>অটোমেটেড বাগ ফিক্সিং</li>
+                            <li>রিফ্যাক্টরিং সাপোর্ট</li>
+                            <li>ভার্চুয়াল অ্যাসিস্ট্যান্ট</li>
+                            <li>রিয়েল-টাইম কোড রিভিউ</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="quote-box">
+                    <p>"MCP হলো আমাদের সিস্টেমের মূল মস্তিষ্ক - এটি সব কমিউনিকেশন মেডিয়েট করে, ডিসিশন নেয়, এবং সিস্টেমের অখণ্ডতা নিশ্চিত করে।"</p>
+                </div>
+                
+                <div class="architecture-diagram">
+                    <h3 style="color: #f87171; margin-bottom: 1rem;">MCP Core রিকোয়েস্ট/রেসপন্স স্ট্রাকচার</h3>
+                    <pre>
+// Request Header (Mandatory)
+{
+  "agent_id": "code-agent-1",
+  "persona": "bangla-dev",
+  "editor": "vscode",
+  "tools": ["file", "terminal", "memory-read"],
+  "conversation_id": "xyz-12345",
+  "memory_refs": ["emb:123", "note:45"],
+  "trace_id": "t-8765"
+}
+
+// Response Pattern (Traceable Action)
+{
+  "action": "apply_diff" | "show_message" | "run_terminal_command",
+  "confidence": 0.82,
+  "used_tools": ["file"],
+  "output": { /* Action-specific payload */ },
+  "next_hint": "run tests" | "ask user for clarification"
+}
+                    </pre>
+                </div>
+            </section>
+            
+            <!-- Performance Metrics -->
+            <section class="section">
+                <h2 class="section-title">⚡ পারফরমেন্স মেট্রিক্স</h2>
+                
+                <div class="grid grid-3">
+                    <div class="card" style="text-align: center;">
+                        <h3 class="card-title">⏱️ রেসপন্স টাইম</h3>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--success); margin: 1rem 0;">60ms</div>
+                        <p>গড় রেসপন্স টাইম</p>
+                        <p style="font-size: 0.9rem; color: #64748b;">(এজেন্ট অনুযায়ী 45-85ms)</p>
+                    </div>
+                    
+                    <div class="card" style="text-align: center;">
+                        <h3 class="card-title">🧠 মেমরি ব্যবহার</h3>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary); margin: 1rem 0;">96-128MB</div>
+                        <p>প্রতি এজেন্ট</p>
+                        <p style="font-size: 0.9rem; color: #64748b;">(ডায়নামিক অপ্টিমাইজেশন)</p>
+                    </div>
+                    
+                    <div class="card" style="text-align: center;">
+                        <h3 class="card-title">🔄 সিস্টেম স্ট্যাটাস</h3>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--warning); margin: 1rem 0;">স্থিতিশীল</div>
+                        <p>সার্ভিস আপটাইম</p>
+                        <p style="font-size: 0.9rem; color: #64748b;">(99.9% টার্গেট)</p>
+                    </div>
+                </div>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>এজেন্ট নাম</th>
+                            <th>গড় রেসপন্স টাইম</th>
+                            <th>মেমরি ব্যবহার</th>
+                            <th>সক্রিয় সেশন</th>
+                            <th>স্ট্যাটাস</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>মাস্টার অর্কেস্ট্রেটর</td>
+                            <td>45ms</td>
+                            <td>128MB</td>
+                            <td>0</td>
+                            <td><span class="status-badge status-active">সক্রিয়</span></td>
+                        </tr>
+                        <tr>
+                            <td>চ্যাট অ্যাসিস্ট্যান্ট</td>
+                            <td>65ms</td>
+                            <td>96MB</td>
+                            <td>0</td>
+                            <td><span class="status-badge status-active">সক্রিয়</span></td>
+                        </tr>
+                        <tr>
+                            <td>কোড এডিটর</td>
+                            <td>85ms</td>
+                            <td>112MB</td>
+                            <td>0</td>
+                            <td><span class="status-badge status-active">সক্রিয়</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- Future Vision -->
+            <section class="section">
+                <h2 class="section-title">🔮 ভবিষ্যতের ভিশন</h2>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">🌐 মাল্টি-প্ল্যাটফর্ম সাপোর্ট</h3>
+                        <ul class="feature-list">
+                            <li>ওয়েব-ভিত্তিক এডিটর</li>
+                            <li>মোবাইল অ্যাপ্লিকেশন</li>
+                            <li>CLI ইন্টারফেস</li>
+                            <li>ডেস্কটপ অ্যাপ্লিকেশন</li>
+                            <li>ব্রাউজার এক্সটেনশন</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">🤖 অ্যাডভান্সড AI ক্ষমতা</h3>
+                        <ul class="feature-list">
+                            <li>মাল্টি-মোডাল ইনপুট (অডিও, ভিডিও, ইমেজ)</li>
+                            <li>প্রেডিক্টিভ কোডিং</li>
+                            <li>অটোমেটেড টেস্টিং</li>
+                            <li>সিকিউরিটি অ্যানালিসিস</li>
+                            <li>পারফরমেন্স অপ্টিমাইজেশন</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <h3>🎯 লম্বামেয়াদী লক্ষ্য</h3>
+                    <p>ZombieCoder-এর লক্ষ্য হলো ডেভেলপারদের জন্য একটি সম্পূর্ণ সহযোগী AI পরিবেশ তৈরি করা যেখানে কোডিং, ডকুমেন্টেশন, টেস্টিং, এবং ডিপ্লয়মেন্ট সবকিছুই একই প্ল্যাটফর্মে সমন্বিত হবে।</p>
+                </div>
+            </section>
+            
+        </div>
+        
+        <footer>
+            <h3>🧟‍♂️ ZombieCoder - যেখানে কোড ও কথা বলে</h3>
+            <p>Developed with ❤️ by Sahon Srabon | Developer Zone</p>
+            <p>© 2026 All Rights Reserved | Proprietary - Local Freedom Protocol</p>
+        </footer>
+    </div>
+</body>
+</html>

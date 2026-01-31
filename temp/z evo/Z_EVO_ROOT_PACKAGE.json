@@ -1,0 +1,36 @@
+{
+  "name": "z-evo",
+  "version": "1.0.0",
+  "description": "Z-Evo AI Agent System - Professional Modular Architecture",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "start": "npm run start -w packages/mcp-server",
+    "dev": "concurrently \"npm run dev -w packages/mcp-server\" \"npm run dev -w services/api-gateway\"",
+    "test": "npm run test --workspaces",
+    "build": "npm run build --workspaces",
+    "setup": "npm install && npm run setup:packages",
+    "setup:packages": "npm run setup --workspaces"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "llm",
+    "mcp",
+    "development",
+    "platform"
+  ],
+  "author": "Sahon Srabon",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
