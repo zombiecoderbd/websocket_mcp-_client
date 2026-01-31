@@ -327,3 +327,4 @@ For issues, questions, or contributions, please open an issue in the repository.
 \`\`\`
 
 \`\`\`md file="" isHidden
+# websocket_mcp-_client
