@@ -23,10 +23,14 @@ import serversRoutes from './routes/servers';
 import enhancedServersRoutes from './routes/servers-enhanced';
 import testRoutes from './routes/test-route';
 import simpleTestRoutes from './routes/simple-test';
+import agentManagementRoutes from './routes/agent-management';
 
 // Import services
 import { OllamaService } from './services/ollama';
 import { WebSocketService } from './services/websocket';
+
+// Increase EventEmitter max listeners to prevent memory leak warnings
+process.setMaxListeners(20);
 import { Logger } from './utils/logger';
 import { initializeDatabase } from './database/connection';
 
@@ -75,6 +79,7 @@ app.use('/servers', serversRoutes);
 app.use('/test', testRoutes);
 app.use('/simple-test', simpleTestRoutes);
 app.use('/api/proxy/servers', enhancedServersRoutes);
+app.use('/api/management', agentManagementRoutes);
 
 // Debug logging
 logger.info('Enhanced servers routes registered at /api/proxy/servers');

@@ -1,0 +1,7 @@
+tunnel: 6ec068de-d21e-4e82-a446-e02ed28f8569
+credentials-file: /home/sahon/.cloudflared/6ec068de-d21e-4e82-a446-e02ed28f8569.json
+
+ingress:
+  - hostname: zombiecoder.example.com
+    service: http://localhost:8000
+  - service: http_status:404

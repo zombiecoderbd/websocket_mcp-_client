@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-Evo সিস্টেম ডকুমেন্টেশন</title>
+    <style>
+        body {
+            font-family: 'Kalpurush', 'SolaimanLipi', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+        }
+        .module {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .completed {
+            background: #27ae60;
+            color: white;
+        }
+        .in-progress {
+            background: #f39c12;
+            color: white;
+        }
+        .pending {
+            background: #95a5a6;
+            color: white;
+        }
+        .code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .feature-list {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .feature-list li {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 Z-Evo সিস্টেম ডকুমেন্টেশন</h1>
+            <p>প্রফেশনাল মডুলার এআই এজেন্ট প্ল্যাটফর্ম</p>
+        </div>
+
+        <div class="module">
+            <h2>প্রজেক্ট ওভারভিউ</h2>
+            <p>Z-Evo হল একটি প্রফেশনাল এআই এজেন্ট সিস্টেম যা ইন্ডাস্ট্রি স্ট্যান্ডার্ড আর্কিটেকচার অনুসরণ করে মডুলার মনোরিপো প্যাটার্ন ব্যবহার করে তৈরি। সিস্টেমটি সর্বোচ্চ রক্ষণাবেক্ষণ ও স্কেলেবিলিটির জন্য আলাদা আলাদা ভালোভাবে সংজ্ঞায়িত মডিউলে সংগঠিত।</p>
+        </div>
+
+        <div class="module">
+            <h2>আর্কিটেকচার গঠন <span class="status completed">সম্পন্ন</span></h2>
+            <div class="code">
+z-evo/
+├── bin/                        # লঞ্চার স্ক্রিপ্ট
+│   └── launch.sh              # মূল সিস্টেম লঞ্চার
+├── packages/                   # কোর মডিউল
+│   ├── core/                  # শেয়ার্ড ইউটিলিটি এবং টাইপ
+│   ├── mcp-server/            # মডেল কোঅর্ডিনেশন প্রোটোকল সার্ভার
+│   ├── lsp-dap/               # ল্যাঙ্গুয়েজ সার্ভার প্রোটোকল & ডিবাগ অ্যাডাপ্টার প্রোটোকল
+│   ├── proxy-extension/       # প্রক্সি এবং এক্সটেনশন হ্যান্ডলিং
+│   ├── agents/                # এআই এজেন্ট বাস্তবায়ন
+│   ├── websocket/             # ওয়েবসকেট কমিউনিকেশন লেয়ার
+│   └── database/              # ডেটাবেস ম্যানেজমেন্ট
+├── services/                   # ব্যাকএন্ড সার্ভিস
+│   ├── api-gateway/           # সেন্ট্রাল এপিআই রাউটিং
+│   ├── auth-service/          # অথেন্টিকেশন এবং অথরাইজেশন
+│   └── monitoring-service/    # সিস্টেম মনিটরিং
+├── libs/                       # শেয়ার্ড লাইব্রেরি
+│   ├── utils/                 # ইউটিলিটি ফাংশন
+│   ├── logger/                # লগিং সিস্টেম
+│   ├── config/                # কনফিগারেশন ম্যানেজমেন্ট
+│   └── security/              # সিকিউরিটি ইউটিলিটি
+├── docs/                       # ডকুমেন্টেশন
+├── tests/                      # টেস্ট ফাইল
+├── config/                     # কনফিগারেশন ফাইল
+├── data/                       # ডেটা ফাইল এবং ডেটাবেস
+├── package.json               # রুট প্যাকেজ কনফিগারেশন
+└── README.md                  # প্রজেক্ট ওভারভিউ
+            </div>
+        </div>
+
+        <div class="module">
+            <h2>কোর প্যাকেজ সমূহ <span class="status completed">সম্পন্ন</span></h2>
+            
+            <h3>১. MCP সার্ভার (packages/mcp-server/)</h3>
+            <p><strong>উদ্দেশ্য:</strong> মডেল কোঅর্ডিনেশন প্রোটোকল বাস্তবায়ন</p>
+            <p><strong>প্রধান কম্পোনেন্ট:</strong></p>
+            <ul>
+                <li>Server.js - মূল সার্ভার এন্ট্রি পয়েন্ট</li>
+                <li>ZombieCoderMCP.js - MCP প্রোটোকল হ্যান্ডলার</li>
+                <li>WebSocketServer.js - ওয়েবসকেট কমিউনিকেশন</li>
+                <li>AgentRuntimeMonitor.js - এজেন্ট মনিটরিং</li>
+                <li>EditorConnectionManager.js - এডিটর ইন্টিগ্রেশন</li>
+            </ul>
+            <p><strong>নির্ভরতা:</strong> ws, sqlite3</p>
+            <p><strong>পোর্ট:</strong> 3002 (ওয়েবসকেট), 3003 (HTTP)</p>
+
+            <h3>২. LSP-DAP (packages/lsp-dap/) <span class="status pending">বাকি আছে</span></h3>
+            <p><strong>উদ্দেশ্য:</strong> ল্যাঙ্গুয়েজ সার্ভার প্রোটোকল এবং ডিবাগ অ্যাডাপ্টার প্রোটোকল</p>
+            <p><strong>বৈশিষ্ট্য:</strong> কোড কমপ্লিশন, ইন্টেলিসেন্স, ডিবাগিং সাপোর্ট</p>
+
+            <h3>৩. প্রক্সি এক্সটেনশন (packages/proxy-extension/) <span class="status pending">বাকি আছে</span></h3>
+            <p><strong>উদ্দেশ্য:</strong> এক্সটেনশন এবং প্রক্সি ম্যানেজমেন্ট</p>
+        </div>
+
+        <div class="module">
+            <h2>শুরু করার পদ্ধতি <span class="status completed">সম্পন্ন</span></h2>
+            <h3>প্রয়োজনীয়তা</h3>
+            <ul>
+                <li>Node.js 18+</li>
+                <li>npm 8+</li>
+            </ul>
+
+            <h3>ইনস্টলেশন</h3>
+            <div class="code">
+# প্রজেক্ট রুটে নেভিগেট করুন
+cd /home/sahon/Desktop/sahon/z-evo
+
+# সমস্ত নির্ভরতা ইনস্টল করুন
+npm run setup
+
+# সিস্টেম শুরু করুন
+./bin/launch.sh start
+
+# সিস্টেম স্ট্যাটাস চেক করুন
+./bin/launch.sh status
+
+# সিস্টেম বন্ধ করুন
+./bin/launch.sh stop
+            </div>
+        </div>
+
+        <div class="module">
+            <h2>ডেভেলপমেন্ট ওয়ার্কফ্লো <span class="status completed">সম্পন্ন</span></h2>
+            <h3>কমান্ড সমূহ</h3>
+            <div class="code">
+# ডেভেলপমেন্ট মোড (হট রিলোড)
+./bin/launch.sh dev
+
+# টেস্ট রান করুন
+npm test
+
+# সমস্ত প্যাকেজ বিল্ড করুন
+npm run build
+
+# সিস্টেম স্ট্যাটাস চেক করুন
+./bin/launch.sh status
+            </div>
+        </div>
+
+        <div class="module">
+            <h2>সিকিউরিটি বৈশিষ্ট্য <span class="status completed">সম্পন্ন</span></h2>
+            <ul>
+                <li>JWT-ভিত্তিক অথেন্টিকেশন</li>
+                <li>রোল-ভিত্তিক অ্যাক্সেস কন্ট্রোল</li>
+                <li>ইনপুট ভ্যালিডেশন এবং স্যানিটাইজেশন</li>
+                <li>সিকিউর ওয়েবসকেট কানেকশন</li>
+                <li>এনভায়রনমেন্ট-ভিত্তিক কনফিগারেশন</li>
+            </ul>
+        </div>
+
+        <div class="module">
+            <h2>ট্রাবলশুটিং <span class="status completed">সম্পন্ন</span></h2>
+            <h3>সাধারণ সমস্যা</h3>
+            <div class="feature-list">
+                <li><strong>পোর্ট কনফ্লিক্ট:</strong> netstat -tlnp | grep :3002</li>
+                <li><strong>নির্ভরতা সমস্যা:</strong> rm -rf node_modules package-lock.json && npm run setup</li>
+                <li><strong>ডেটাবেস কানেকশন:</strong> ls -la data/databases/</li>
+            </div>
+            <h3>লগ ফাইল</h3>
+            <ul>
+                <li>সিস্টেম লগ: data/logs/</li>
+                <li>সার্ভার লগ: packages/mcp-server/*.log</li>
+                <li>এরর লগ: কনসোল আউটপুট চেক করুন</li>
+            </ul>
+        </div>
+
+        <div class="module">
+            <h2>প্রজেক্ট স্ট্যাটাস</h2>
+            <table>
+                <tr>
+                    <th>মডিউল</th>
+                    <th>অবস্থা</th>
+                    <th>বর্ণনা</th>
+                </tr>
+                <tr>
+                    <td>MCP সার্ভার</td>
+                    <td><span class="status completed">সম্পন্ন</span></td>
+                    <td>মডেল কোঅর্ডিনেশন প্রোটোকল বাস্তবায়ন</td>
+                </tr>
+                <tr>
+                    <td>প্রজেক্ট গঠন</td>
+                    <td><span class="status completed">সম্পন্ন</span></td>
+                    <td>মডুলার মনোরিপো গঠন</td>
+                </tr>
+                <tr>
+                    <td>লঞ্চার স্ক্রিপ্ট</td>
+                    <td><span class="status completed">সম্পন্ন</span></td>
+                    <td>বিন ফোল্ডারে সিস্টেম লঞ্চার</td>
+                </tr>
+                <tr>
+                    <td>ডকুমেন্টেশন</td>
+                    <td><span class="status completed">সম্পন্ন</span></td>
+                    <td>বাংলা ও ইংরেজি ডকুমেন্টেশন</td>
+                </tr>
+                <tr>
+                    <td>টেস্ট ফ্রেমওয়ার্ক</td>
+                    <td><span class="status completed">সম্পন্ন</span></td>
+                    <td>ইউনিট টেস্ট এবং ইন্টিগ্রেশন টেস্ট</td>
+                </tr>
+                <tr>
+                    <td>LSP-DAP মডিউল</td>
+                    <td><span class="status pending">বাকি আছে</span></td>
+                    <td>ল্যাঙ্গুয়েজ সার্ভার প্রোটোকল</td>
+                </tr>
+                <tr>
+                    <td>এপিআই গেটওয়ে</td>
+                    <td><span class="status pending">বাকি আছে</span></td>
+                    <td>সেন্ট্রাল এপিআই রাউটিং</td>
+                </tr>
+                <tr>
+                    <td>অথেন্টিকেশন সার্ভিস</td>
+                    <td><span class="status pending">বাকি আছে</span></td>
+                    <td>ইউজার অথেন্টিকেশন এবং JWT</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="module">
+            <h2>অবদান রাখা</h2>
+            <ol>
+                <li>মডুলার গঠন অনুসরণ করুন</li>
+                <li>নতুন ফিচারের জন্য টেস্ট লিখুন</li>
+                <li>ডকুমেন্টেশন আপডেট করুন</li>
+                <li>কোডিং স্ট্যান্ডার্ড অনুসরণ করুন</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: #ecf0f1; border-radius: 8px;">
+            <p><strong>ডেভেলপ করেছেন:</strong> সাহন শ্রবণ</p>
+            <p><strong>আর্কিটেকচার:</strong> মডুলার মনোরিপো</p>
+            <p><strong>অবস্থা:</strong> সক্রিয় ডেভেলপমেন্ট</p>
+        </div>
+    </div>
+</body>
+</html>

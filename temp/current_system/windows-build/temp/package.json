@@ -1,0 +1,59 @@
+{
+  "name": "editor-agent-vscode-extension",
+  "displayName": "Editor Agent Bridge",
+  "description": "VS Code extension for MCP Editor Agent integration",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./vscode-extension-bridge.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "editorAgent.connect",
+        "title": "Editor Agent: Connect"
+      },
+      {
+        "command": "editorAgent.disconnect",
+        "title": "Editor Agent: Disconnect"
+      },
+      {
+        "command": "editorAgent.status",
+        "title": "Editor Agent: Show Status"
+      }
+    ],
+    "configuration": {
+      "title": "Editor Agent",
+      "properties": {
+        "editorAgent.autoConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically connect to Editor Agent on startup"
+        },
+        "editorAgent.websocketUrl": {
+          "type": "string",
+          "default": "ws://localhost:8080",
+          "description": "WebSocket URL for Editor Agent"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "@types/vscode": "^1.60.0",
+    "typescript": "^4.4.0"
+  },
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}

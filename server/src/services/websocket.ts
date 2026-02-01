@@ -137,6 +137,11 @@ export class WebSocketService {
                 });
                 break;
 
+            case 'agent_command':
+                // Handle agent commands
+                this.handleAgentCommand(ws, message);
+                break;
+
             default:
                 this.sendMessage(ws, {
                     type: 'error',
@@ -182,6 +187,131 @@ export class WebSocketService {
         this.sendMessage(ws, message);
     }
 
+    // Handle agent commands
+    private handleAgentCommand(ws: WebSocket, message: WebSocketMessage): void {
+        const clientInfo = this.clients.get(ws);
+        
+        this.logger.info('Agent command received', {
+            command: message.data?.command,
+            clientId: clientInfo?.id,
+            clientIp: clientInfo?.ip
+        });
+        
+        try {
+            const command = message.data?.command;
+            const params = message.data?.params || {};
+            
+            // Process different agent commands
+            switch (command) {
+                case 'get_agent_list':
+                    this.sendAgentList(ws);
+                    break;
+                
+                case 'get_agent_metadata':
+                    this.sendAgentMetadata(ws, params.agentId);
+                    break;
+                
+                case 'execute_agent_task':
+                    this.executeAgentTask(ws, params);
+                    break;
+                
+                default:
+                    this.sendMessage(ws, {
+                        type: 'agent_response',
+                        data: {
+                            success: false,
+                            error: `Unknown agent command: ${command}`
+                        }
+                    });
+            }
+        } catch (error) {
+            this.logger.error('Error handling agent command:', error);
+            this.sendMessage(ws, {
+                type: 'agent_response',
+                data: {
+                    success: false,
+                    error: 'Failed to process agent command'
+                }
+            });
+        }
+    }
+    
+    // Send agent list to client
+    private sendAgentList(ws: WebSocket): void {
+        // Mock agent list - in real implementation, this would come from database
+        const agents = [
+            {
+                id: 'agent-1',
+                name: 'Code Assistant',
+                type: 'editor',
+                status: 'active',
+                persona: 'professional'
+            },
+            {
+                id: 'agent-2',
+                name: 'System Monitor',
+                type: 'monitoring',
+                status: 'active',
+                persona: 'technical'
+            }
+        ];
+        
+        this.sendMessage(ws, {
+            type: 'agent_list',
+            data: {
+                agents: agents,
+                timestamp: new Date().toISOString()
+            }
+        });
+    }
+    
+    // Send agent metadata
+    private sendAgentMetadata(ws: WebSocket, agentId: string): void {
+        // Mock agent metadata
+        const metadata = {
+            id: agentId,
+            name: 'Code Assistant',
+            description: 'Helps with code editing and development tasks',
+            capabilities: ['code_completion', 'debugging', 'refactoring'],
+            persona: {
+                name: 'Professional Developer',
+                prefix: 'ভাইয়া,',
+                style: 'technical_bengali',
+                response_template: 'ভাইয়া, {message} সম্পর্কে আমি বিস্তারিত ব্যাখ্যা করতে পারি।'
+            }
+        };
+        
+        this.sendMessage(ws, {
+            type: 'agent_metadata',
+            data: {
+                agentId: agentId,
+                metadata: metadata,
+                timestamp: new Date().toISOString()
+            }
+        });
+    }
+    
+    // Execute agent task
+    private executeAgentTask(ws: WebSocket, params: any): void {
+        const { agentId, task, inputData } = params;
+        
+        // Simulate agent processing
+        setTimeout(() => {
+            const response = {
+                type: 'agent_response',
+                data: {
+                    agentId: agentId,
+                    task: task,
+                    success: true,
+                    result: `Processed task: ${task} with input: ${JSON.stringify(inputData)}`,
+                    timestamp: new Date().toISOString()
+                }
+            };
+            
+            this.sendMessage(ws, response);
+        }, 1000);
+    }
+    
     // Broadcast agent status update
     public broadcastAgentStatus(agentId: string, status: string): void {
         this.broadcast({

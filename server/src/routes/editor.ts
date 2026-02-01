@@ -520,7 +520,7 @@ router.post('/operations', async (req, res) => {
       success: true
     });
     
-    res.json({
+    return res.json({
       success: true,
       ...result,
       timestamp: new Date().toISOString()
@@ -529,7 +529,7 @@ router.post('/operations', async (req, res) => {
   } catch (error) {
     logger.error('Editor operation failed:', error);
     
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to process editor operation',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -612,7 +612,7 @@ router.post('/connect-websocket', async (req, res) => {
       logger.error('WebSocket error:', error);
     });
     
-    res.json({
+    return res.json({
       success: true,
       message: 'WebSocket connection initiated',
       websocketUrl,
@@ -622,7 +622,7 @@ router.post('/connect-websocket', async (req, res) => {
   } catch (error) {
     logger.error('WebSocket connection failed:', error);
     
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to establish WebSocket connection',
       message: error instanceof Error ? error.message : 'Unknown error',

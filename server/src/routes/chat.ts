@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { OllamaService, ChatMessage } from '../services/ollama';
 import { Logger } from '../utils/logger';
 import { executeQuery } from '../database/connection';
+import { dynamicConfigService } from '../services/dynamic-config';
 
 const router = express.Router();
 const ollamaService = new OllamaService();
@@ -16,6 +17,17 @@ router.post('/message', async (req, res) => {
             return res.status(400).json({
                 error: 'Message is required and must be a string'
             });
+        }
+
+        // If agent_id is provided, get agent configuration
+        let agentConfig = null;
+        if (agent_id) {
+            agentConfig = dynamicConfigService.getAgentConfig(agent_id);
+            if (!agentConfig) {
+                return res.status(404).json({
+                    error: 'Agent not found or not configured properly'
+                });
+            }
         }
 
         // Prepare messages array
@@ -51,8 +63,15 @@ router.post('/message', async (req, res) => {
             content: message
         });
 
-        // Generate response
-        const response = await ollamaService.chat(messages, model);
+        // Generate response using agent configuration if available
+        let response: string;
+        if (agentConfig && agentConfig.id) {
+            // Use agent-specific generation with persona
+            response = await ollamaService.generateWithPersona(messages, agentConfig.id, model);
+        } else {
+            // Use default generation
+            response = await ollamaService.chat(messages, model);
+        }
 
         // Save the conversation if database is available
         if ((global as any).connection) {
@@ -95,6 +114,7 @@ router.post('/message', async (req, res) => {
 
         // Log the interaction
         logger.info('Chat interaction', {
+            agentId: agent_id || 'default',
             userMessage: message.substring(0, 100),
             responseLength: response.length,
             model: model || 'default'
@@ -106,6 +126,13 @@ router.post('/message', async (req, res) => {
             conversationId: conversation_id || ((global as any).connection ? 'new_conversation_id_placeholder' : undefined),
             model: model || process.env.OLLAMA_DEFAULT_MODEL,
             timestamp: new Date().toISOString(),
+            agent: agentConfig ? {
+                id: agentConfig.id,
+                name: agentConfig.name,
+                persona: agentConfig.persona_name,
+                greeting: agentConfig.greeting_prefix,
+                signature: agentConfig.signature_prefix
+            } : undefined,
             conversation: {
                 user: message,
                 assistant: response
@@ -114,10 +141,22 @@ router.post('/message', async (req, res) => {
     } catch (error) {
         logger.error('Chat error:', error);
 
+        // Handle error based on transparency requirements
+        let errorMessage = 'Failed to generate response';
+        if (error instanceof Error) {
+            if (error.message.includes('timeout') || error.message.includes('connection')) {
+                errorMessage = 'সরাসরি বলছি ভাই, আমাদের সিস্টেমের মগজে (Server) এই মুহূর্তে একটা যান্ত্রিক গোলযোগ দেখা দিয়েছে। আমি আপনার অনুরোধটি প্রসেস করার জন্য প্রয়োজনীয় তথ্য খুঁজে পাচ্ছি না। কোনো কিছু লুকাবো না—সিস্টেম এখন মেইনটেন্যান্স বা গুরুতর টেকনিক্যাল এররের মধ্য দিয়ে যাচ্ছে। আপনি চাইলে কিছুক্ষণ পর আবার চেষ্টা করতে পারেন। সত্যটা জানানোর জন্য ধন্যবাদ।';
+            } else if (error.message.includes('not found') || error.message.includes('no data')) {
+                errorMessage = 'ভাইয়া, আমি আপনার প্রশ্নের সঠিক উত্তরটি এই মুহূর্তে খুঁজে পাচ্ছি না। আমার মেমোরিতে (Database) এই বিষয়ে কোনো অথেন্টিক রেফারেন্স বা ট্রেনিং ডাটা নেই। ভুল তথ্য দিয়ে আপনাকে বিভ্রান্ত করতে চাই না। আমি বিষয়টি এডমিন লেভেলে নোট করে রাখছি। আগামীতে হয়তো আপনাকে এ বিষয়ে পরিষ্কার জানাতে পারবো।';
+            } else {
+                errorMessage = 'সহজভাবে স্বীকার করছি, আমার এই মুহূর্তে উত্তর দেওয়ার মতো সক্ষমতা নেই। এডমিন প্যানেল থেকে কিছু সীমাবদ্ধতা বা কনফিগারেশন আপডেট চলছে, যার ফলে আমি আপনার সাথে পুরোপুরি কানেক্ট হতে পারছি না। হতাশ হবেন না, আমাদের টিম এটা নিয়ে কাজ করছে। ধৈর্য ধরার জন্য আপনার প্রতি কৃতজ্ঞতা।';
+            }
+        }
+
         res.status(500).json({
             success: false,
-            error: 'Failed to generate response',
-            message: error instanceof Error ? error.message : 'Unknown error',
+            error: 'Agent Processing Error',
+            message: errorMessage,
             timestamp: new Date().toISOString()
         });
     }

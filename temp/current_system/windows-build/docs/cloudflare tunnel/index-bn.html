@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ক্লাউডফ্লেয়ার টানেল - সহজ বাংলা গাইড</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kalpurush', 'SolaimanLipi', 'Noto Sans Bengali', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            font-size: 1.8rem;
+        }
+
+        .card h3 {
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            font-size: 1.4rem;
+        }
+
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .nav-card {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9, #1f618d);
+        }
+
+        .nav-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .nav-card h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .feature-item h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .domain-info {
+            background: linear-gradient(135deg, #e8f5e8, #d4edda);
+            border-left: 5px solid #28a745;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .step-guide {
+            counter-reset: step-counter;
+            margin: 25px 0;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            background: #fff3cd;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .step:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: #ffc107;
+            color: #212529;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .benefit-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .faq-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .navigation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .highlight {
+            background: #fff9c4;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 ক্লাউডফ্লেয়ার টানেল</h1>
+            <p>আপনার ওয়েবসাইট এবং অ্যাপ্লিকেশনগুলোকে নিরাপদ ও দ্রুত করে তোলার সহজ পদ্ধতি</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-lightbulb"></i> ক্লাউডফ্লেয়ার টানেল কী?</h2>
+            <p>ক্লাউডফ্লেয়ার টানেল হচ্ছে একটি অত্যাধুনিক প্রযুক্তি যা আপনার কম্পিউটার বা সার্ভারকে ইন্টারনেটের সাথে সুরক্ষিতভাবে সংযুক্ত করে। এটি আপনার সার্ভারের আসল ঠিকানা (IP Address) গোপন রেখে আপনার ওয়েবসাইটগুলোকে সুরক্ষিত ও দ্রুত করে তোলে।</p>
+            
+            <div class="success-box">
+                <h3>💡 সহজ ভাষায় বলতে হয়:</h3>
+                <p>এটি হচ্ছে একটি "গোপন সেতু" যা আপনার কম্পিউটার থেকে ইন্টারনেটে ডেটা পাঠায়, কিন্তু কেউ জানতে পারে না আপনার কম্পিউটারটি কোথায় আছে!</p>
+            </div>
+        </div>
+
+        <div class="navigation-grid">
+            <a href="domain-setup-bn.html" class="nav-card">
+                <i class="fas fa-cog"></i>
+                <h3>ডোমেইন সেটআপ গাইড</h3>
+                <p>ধাপে ধাপে নির্দেশনা</p>
+            </a>
+            
+            <a href="BENEFITS_AND_HOW_IT_WORKS_BN.md" class="nav-card">
+                <i class="fas fa-star"></i>
+                <h3>সুবিধা ও কিভাবে কাজ করে</h3>
+                <p>বিস্তারিত ব্যাখ্যা</p>
+            </a>
+            
+            <a href="IMPLEMENTATION_PLAN_BN.md" class="nav-card">
+                <i class="fas fa-tasks"></i>
+                <h3>বাস্তবায়ন পরিকল্পনা</h3>
+                <p>পূর্ণ কার্যক্রম</p>
+            </a>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-globe"></i> আমাদের ডোমেইন সম্পর্কে</h2>
+            
+            <div class="domain-info">
+                <h3>🎯 মূল ডোমেইন: <span class="highlight">zombiecoder.my.id</span></h3>
+                <p>এটি হবে আপনার প্রধান ওয়েবসাইটের ঠিকানা</p>
+            </div>
+
+            <h3>🔗 সাবডোমেইনগুলো:</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4><i class="fas fa-app-store-ios"></i> app.zombiecoder.my.id</h4>
+                    <p>আপনার অ্যাপ্লিকেশন বা ওয়েব এপ্লিকেশনের জন্য</p>
+                </div>
+                
+                <div class="feature-item">
+                    <h4><i class="fas fa-robot"></i> zombie.zombiecoder.my.id</h4>
+                    <p>বিশেষ সার্ভিস বা রোবট সম্পর্কিত কাজের জন্য</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4><i class="fas fa-exclamation-triangle"></i> গুরুত্বপূর্ণ তথ্য:</h4>
+                <p>এই ডোমেইনগুলো চালু করতে আমাদের ক্লাউডফ্লেয়ারের নেমসার্ভার ব্যবহার করতে হবে:</p>
+                <ul style="margin-top: 10px;">
+                    <li>🔹 carmelo.ns.cloudflare.com</li>
+                    <li>🔹 eloise.ns.cloudflare.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-shield-alt"></i> কেন ক্লাউডফ্লেয়ার টানেল ব্যবহার করবেন?</h2>
+            
+            <div class="feature-list">
+                <div class="benefit-box">
+                    <h4><i class="fas fa-lock"></i> 🔒 উন্নত নিরাপত্তা</h4>
+                    <p>আপনার কম্পিউটারের আসল ঠিকানা কেউ দেখতে পাবে না। হ্যাকাররা আপনাকে সরাসরি আক্রমণ করতে পারবে না।</p>
+                </div>
+                
+                <div class="benefit-box">
+                    <h4><i class="fas fa-bolt"></i> ⚡ দ্রুত গতি</h4>
+                    <p>ক্লাউডফ্লেয়ারের বিশ্বব্যাপী নেটওয়ার্ক ব্যবহার করে আপনার ওয়েবসাইট অনেক দ্রুত চলবে।</p>
+                </div>
+                
+                <div class="benefit-box">
+                    <h4><i class="fas fa-cloud"></i> ☁️ সহজ ব্যবস্থাপনা</h4>
+                    <p>জটিল ফায়ারওয়াল বা পাবলিক আইপি ঠিকানা নিয়ে চিন্তা করার দরকার নেই।</p>
+                </div>
+                
+                <div class="benefit-box">
+                    <h4><i class="fas fa-shield-virus"></i> 🛡️ ডিডিওএস সুরক্ষা</h4>
+                    <p>অ্যাটাক থেকে আপনার ওয়েবসাইট সুরক্ষিত থাকবে।</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-route"></i> কিভাবে এটি আপনার ডোমেইনগুলোকে উপকার করবে</h2>
+            
+            <div class="step-guide">
+                <div class="step">
+                    <h3>zombiecoder.my.id - প্রধান ওয়েবসাইট</h3>
+                    <p>আপনার মূল ওয়েবসাইট সুরক্ষিত থাকবে এবং দ্রুত চলবে। কেউ আপনার সার্ভারের আসল ঠিকানা জানতে পারবে না।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>app.zombiecoder.my.id - অ্যাপ্লিকেশন</h3>
+                    <p>আপনার অ্যাপ্লিকেশনগুলো সুরক্ষিতভাবে চলবে এবং প্রয়োজন হলে শুধুমাত্র নির্দিষ্ট মানুষরা ঢুকতে পারবে।</p>
+                </div>
+                
+                <div class="step">
+                    <h3>zombie.zombiecoder.my.id - বিশেষ সার্ভিস</h3>
+                    <p>বিশেষ কাজের জন্য আলাদা সুরক্ষা এবং পৃথক নিয়ন্ত্রণ ব্যবস্থা থাকবে।</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-question-circle"></i> সচরাচর প্রশ্ন (FAQ)</h2>
+            
+            <div class="faq-section">
+                <div class="faq-item">
+                    <div class="faq-question">❓ এটি কি সত্যিই নিরাপদ?</div>
+                    <p>হ্যাঁ! ক্লাউডফ্লেয়ার টানেল বিশ্বের সবচেয়ে বড় কোম্পানিগুলো ব্যবহার করে। এটি আপনার ডেটাকে এন্ড-টু-এন্ড এনক্রিপশন করে সুরক্ষিত রাখে।</p>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ এটি ব্যবহার করতে কি কঠিন?</div>
+                    <p>না! আমরা ধাপে ধাপে নির্দেশনা দিয়েছি। একজন নন-টেকনিক্যাল ব্যক্তিও সহজে এটি ব্যবহার করতে পারেন।</p>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ এটি কি টাকা খরচ করে?</div>
+                    <p>ক্লাউডফ্লেয়ারের মৌলিক সুবিধাগুলো বিনামূল্যে। যদি আপনার অতিরিক্ত সুবিধা লাগে তাহলে সেগুলোর জন্য টাকা লাগতে পারে।</p>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">❓ আমার বর্তমান ওয়েবসাইট কি প্রভাবিত হবে?</div>
+                    <p>না, আপনার বর্তমান ওয়েবসাইট অপরিবর্তিত থাকবে। আমরা কেবল নিরাপত্তা এবং গতি উন্নয়ন করব।</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-hands-helping"></i> পরবর্তী ধাপগুলো</h2>
+            <p>এখন আপনি নিচের যেকোনো লিঙ্কে ক্লিক করে শুরু করতে পারেন:</p>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4>📚 ডোমেইন সেটআপ গাইড</h4>
+                    <p>ধাপে ধাপে নির্দেশনা দিয়ে ডোমেইন কনফিগার করুন</p>
+                </div>
+                
+                <div class="feature-item">
+                    <h4>⭐ সুবিধা ও বিস্তারিত</h4>
+                    <p>ক্লাউডফ্লেয়ার টানেলের সকল সুবিধা সম্পর্কে জানুন</p>
+                </div>
+                
+                <div class="feature-item">
+                    <h4>📋 বাস্তবায়ন পরিকল্পনা</h4>
+                    <p>পূর্ণ কার্যক্রম এবং টেকনিক্যাল বিস্তারিত</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Cloudflare Tunnel Documentation | সহজ বাংলা গাইড</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Made with ❤️ for non-technical users</p>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add animation delay for cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    </script>
+</body>
+</html>

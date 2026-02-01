@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZombieCoder WebSocket MCP Client</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4ecdc4;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .connection-section {
+            background: rgba(40, 40, 60, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="number"], input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+            background: rgba(20, 20, 35, 0.8);
+            color: #e6e6e6;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="url"]:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+        }
+        button {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-disconnect {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+        .btn-disconnect:hover {
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+            min-width: 100px;
+            text-align: center;
+        }
+        .status-connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        .status-disconnected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        .agent-section {
+            background: rgba(40, 40, 60, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+        }
+        .message-history {
+            background: rgba(20, 20, 35, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .message-incoming {
+            background: rgba(78, 205, 196, 0.1);
+            border-left: 4px solid #4ecdc4;
+        }
+        .message-outgoing {
+            background: rgba(147, 197, 253, 0.1);
+            border-left: 4px solid #93c5fd;
+        }
+        .message-error {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
+        }
+        .agent-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .agent-card {
+            background: rgba(50, 50, 70, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(147, 197, 253, 0.2);
+        }
+        .agent-card h4 {
+            margin: 0 0 10px 0;
+            color: #93c5fd;
+        }
+        .agent-info {
+            font-size: 14px;
+            color: #a0aec0;
+        }
+        .stats-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background: rgba(50, 50, 70, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            margin: 5px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .stats-display {
+                flex-direction: column;
+            }
+            .stat-box {
+                margin: 5px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧟‍♂️ ZombieCoder WebSocket MCP Client</h1>
+        
+        <div class="connection-section">
+            <h2>🔌 Connection Settings</h2>
+            <div class="input-group">
+                <label for="serverUrl">WebSocket Server URL:</label>
+                <input type="url" id="serverUrl" placeholder="ws://localhost:8080" value="ws://localhost:8080">
+            </div>
+            <div class="input-group">
+                <label for="clientId">Client ID (Persistent):</label>
+                <input type="text" id="clientId" placeholder="Enter client identifier">
+            </div>
+            <div style="display: flex; align-items: center;">
+                <button id="connectBtn">Connect</button>
+                <button id="disconnectBtn" class="btn-disconnect" disabled>Disconnect</button>
+                <span>Status: <span id="connectionStatus" class="status-indicator status-disconnected">Disconnected</span></span>
+            </div>
+        </div>
+
+        <div class="stats-display">
+            <div class="stat-box">
+                <div class="stat-value" id="messageCount">0</div>
+                <div class="stat-label">Messages</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="connectionTime">0s</div>
+                <div class="stat-label">Connected</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="agentCount">0</div>
+                <div class="stat-label">Active Agents</div>
+            </div>
+        </div>
+
+        <div class="agent-section">
+            <h2>🤖 Agent Controls</h2>
+            <div class="input-group">
+                <label for="agentCommand">Send Command to Agent:</label>
+                <input type="text" id="agentCommand" placeholder="Enter agent command or message">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <button id="sendAgentCommand">Send to Agent</button>
+                <button id="requestAgentList">Refresh Agent List</button>
+                <button id="testAgentCapabilities">Test Capabilities</button>
+            </div>
+            
+            <h3>Available Agents:</h3>
+            <div id="agentList" class="agent-list">
+                <!-- Agent cards will be populated here -->
+                <div id="agentPlaceholder" class="agent-card" style="text-align: center; padding: 20px;">
+                    <h4>🔎 Loading Agent Status</h4>
+                    <p style="color: #a0aec0;">Please connect to load real-time agent information...</p>
+                </div>
+            </div>
+            
+            <!-- Agent Status Summary -->
+            <div class="stats-display" id="agentStats" style="margin-top: 20px; display: none;">
+                <div class="stat-box">
+                    <div class="stat-value" id="totalAgents">0</div>
+                    <div class="stat-label">Total Agents</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="activeAgents" style="color: #4caf50;">0</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="busyAgents" style="color: #ff9800;">0</div>
+                    <div class="stat-label">Busy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="errorAgents" style="color: #f44336;">0</div>
+                    <div class="stat-label">Error</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-history" id="messageHistory">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button id="clearHistory">Clear History</button>
+            <button id="exportData">Export Data</button>
+            <button id="importData">Import Data</button>
+        </div>
+    </div>
+
+    <script>
+        class WebSocketMCPClient {
+            constructor() {
+                this.ws = null;
+                this.isConnected = false;
+                this.messageCount = 0;
+                this.connectionStartTime = null;
+                this.agentList = [];
+                this.connectionTimer = null;
+                
+                // Enhanced identity system
+                this.clientId = this.generatePersistentClientId();
+                this.sessionId = this.generateSessionId();
+                this.metadata = this.collectClientMetadata();
+                
+                // Load persistent data from localStorage
+                this.loadPersistentData();
+                this.updateUIFromStorage();
+                
+                this.setupEventListeners();
+                this.startStatsUpdater();
+                
+                // Auto-save periodically
+                this.startAutoSave();
+            }
+
+            generatePersistentClientId() {
+                // Generate UUID-based client ID that persists
+                let clientId = localStorage.getItem('mcp_client_id');
+                if (!clientId) {
+                    clientId = 'client_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                    localStorage.setItem('mcp_client_id', clientId);
+                }
+                return clientId;
+            }
+            
+            generateSessionId() {
+                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            collectClientMetadata() {
+                return {
+                    platform: navigator.platform,
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    screen: {
+                        width: screen.width,
+                        height: screen.height,
+                        colorDepth: screen.colorDepth,
+                        availWidth: screen.availWidth,
+                        availHeight: screen.availHeight
+                    },
+                    timestamp: new Date().toISOString(),
+                    sessionId: this.sessionId,
+                    clientId: this.clientId,
+                    capabilities: this.getBrowserCapabilities()
+                };
+            }
+            
+            getBrowserCapabilities() {
+                return {
+                    webSocket: typeof WebSocket !== 'undefined',
+                    localStorage: typeof localStorage !== 'undefined',
+                    sessionStorage: typeof sessionStorage !== 'undefined',
+                    indexedDB: typeof indexedDB !== 'undefined',
+                    serviceWorker: typeof navigator.serviceWorker !== 'undefined',
+                    notifications: typeof Notification !== 'undefined',
+                    geolocation: typeof navigator.geolocation !== 'undefined',
+                    mediaDevices: typeof navigator.mediaDevices !== 'undefined'
+                };
+            }
+            
+            loadPersistentData() {
+                // Load saved settings from localStorage
+                const savedUrl = localStorage.getItem('mcp_server_url');
+                const savedMessages = localStorage.getItem('mcp_message_history');
+                const savedAgents = localStorage.getItem('mcp_agents');
+                
+                // Set client ID in UI
+                document.getElementById('clientId').value = this.clientId;
+                
+                if (savedUrl) {
+                    document.getElementById('serverUrl').value = savedUrl;
+                }
+                if (savedMessages) {
+                    this.messageCount = parseInt(localStorage.getItem('mcp_message_count')) || 0;
+                }
+                if (savedAgents) {
+                    try {
+                        this.agentList = JSON.parse(savedAgents);
+                    } catch (e) {
+                        console.error('Failed to parse saved agents:', e);
+                    }
+                }
+                
+                // Load session data if not expired
+                this.loadSessionData();
+            }
+
+            savePersistentData() {
+                // Save current settings to localStorage
+                const serverUrl = document.getElementById('serverUrl').value;
+                
+                localStorage.setItem('mcp_client_id', this.clientId);
+                localStorage.setItem('mcp_server_url', serverUrl);
+                localStorage.setItem('mcp_message_count', this.messageCount.toString());
+                localStorage.setItem('mcp_agents', JSON.stringify(this.agentList));
+                
+                // Save enhanced session data
+                this.saveSessionData();
+                
+                // Save message history separately to avoid storage limits
+                const history = document.getElementById('messageHistory').innerHTML;
+                localStorage.setItem('mcp_message_history_html', history);
+            }
+            
+            saveSessionData() {
+                const sessionData = {
+                    clientId: this.clientId,
+                    sessionId: this.sessionId,
+                    metadata: this.metadata,
+                    lastActivity: new Date().toISOString(),
+                    messageCount: this.messageCount,
+                    agentInteractions: this.agentList.length,
+                    connectionCount: this.connectionCount || 0
+                };
+                
+                // Set 5-day expiration
+                const expiry = new Date();
+                expiry.setDate(expiry.getDate() + 5);
+                sessionData.expiry = expiry.toISOString();
+                
+                localStorage.setItem('mcp_session_data', JSON.stringify(sessionData));
+            }
+            
+            loadSessionData() {
+                try {
+                    const sessionData = localStorage.getItem('mcp_session_data');
+                    if (sessionData) {
+                        const data = JSON.parse(sessionData);
+                        
+                        // Check if session is expired
+                        if (data.expiry && new Date(data.expiry) > new Date()) {
+                            this.sessionId = data.sessionId || this.sessionId;
+                            this.metadata = data.metadata || this.metadata;
+                            this.messageCount = data.messageCount || this.messageCount;
+                            this.agentList = data.agentInteractions || this.agentList;
+                            
+                            console.log('Loaded persistent session data');
+                        } else {
+                            // Clear expired session
+                            localStorage.removeItem('mcp_session_data');
+                            console.log('Cleared expired session data');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to load session data:', e);
+                    localStorage.removeItem('mcp_session_data');
+                }
+            }
+            
+            startAutoSave() {
+                // Auto-save every 30 seconds
+                setInterval(() => {
+                    if (this.isConnected) {
+                        this.savePersistentData();
+                    }
+                }, 30000);
+            }
+
+            updateUIFromStorage() {
+                // Update agent list display
+                this.updateAgentListDisplay();
+            }
+
+            setupEventListeners() {
+                document.getElementById('connectBtn').addEventListener('click', () => this.connect());
+                document.getElementById('disconnectBtn').addEventListener('click', () => this.disconnect());
+                document.getElementById('sendAgentCommand').addEventListener('click', () => this.sendAgentCommand());
+                document.getElementById('requestAgentList').addEventListener('click', () => this.requestAgentList());
+                document.getElementById('testAgentCapabilities').addEventListener('click', () => this.testAgentCapabilities());
+                document.getElementById('clearHistory').addEventListener('click', () => this.clearHistory());
+                document.getElementById('exportData').addEventListener('click', () => this.exportData());
+                document.getElementById('importData').addEventListener('click', () => this.importData());
+
+                // Auto-save settings when they change
+                document.getElementById('clientId').addEventListener('change', () => this.savePersistentData());
+                document.getElementById('serverUrl').addEventListener('change', () => this.savePersistentData());
+            }
+
+            connect() {
+                const url = document.getElementById('serverUrl').value;
+                const clientId = document.getElementById('clientId').value || `client-${Date.now()}`;
+                
+                if (!url) {
+                    this.addMessage('Please enter a valid WebSocket URL', 'error');
+                    return;
+                }
+
+                try {
+                    this.ws = new WebSocket(url);
+                    
+                    this.ws.onopen = () => {
+                        this.isConnected = true;
+                        this.connectionStartTime = new Date();
+                        
+                        document.getElementById('connectionStatus').className = 'status-indicator status-connected';
+                        document.getElementById('connectionStatus').textContent = 'Connected';
+                        document.getElementById('connectBtn').disabled = true;
+                        document.getElementById('disconnectBtn').disabled = false;
+                        
+                        // Send enhanced client identification with full metadata
+                        const identifyMsg = {
+                            type: 'client_identity',
+                            clientId: this.clientId,
+                            sessionId: this.sessionId,
+                            timestamp: new Date().toISOString(),
+                            metadata: this.metadata,
+                            capabilities: this.getBrowserCapabilities(),
+                            connectionCount: (this.connectionCount || 0) + 1
+                        };
+                        
+                        this.connectionCount = (this.connectionCount || 0) + 1;
+                        this.sendMessage(identifyMsg);
+                        
+                        this.addMessage(`Connected to ${url}`, 'incoming');
+                        this.savePersistentData(); // Save connection info
+                    };
+
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            
+                            // Handle different message types
+                            switch(data.type) {
+                                case 'agent_list':
+                                    this.handleAgentList(data.agents);
+                                    break;
+                                case 'agent_response':
+                                    this.handleAgentResponse(data);
+                                    break;
+                                case 'pong':
+                                    this.addMessage('Ping response received', 'incoming');
+                                    break;
+                                case 'identify_ack':
+                                    this.addMessage(`Client identified as: ${data.clientId} (Session: ${data.sessionId})`, 'incoming');
+                                    break;
+                                case 'session_info':
+                                    this.handleSessionInfo(data);
+                                    break;
+                                default:
+                                    this.addMessage(`Received: ${JSON.stringify(data, null, 2)}`, 'incoming');
+                            }
+                            
+                            this.messageCount++;
+                            this.updateStats();
+                        } catch (e) {
+                            this.addMessage(`Raw message: ${event.data}`, 'incoming');
+                        }
+                    };
+
+                    this.ws.onclose = () => {
+                        this.isConnected = false;
+                        document.getElementById('connectionStatus').className = 'status-indicator status-disconnected';
+                        document.getElementById('connectionStatus').textContent = 'Disconnected';
+                        document.getElementById('connectBtn').disabled = false;
+                        document.getElementById('disconnectBtn').disabled = true;
+                        
+                        this.addMessage('Connection closed', 'error');
+                    };
+
+                    this.ws.onerror = (error) => {
+                        this.addMessage(`Connection error: ${error.message}`, 'error');
+                    };
+
+                } catch (error) {
+                    this.addMessage(`Failed to connect: ${error.message}`, 'error');
+                }
+            }
+
+            disconnect() {
+                if (this.ws) {
+                    this.ws.close();
+                    this.ws = null;
+                }
+            }
+
+            sendMessage(message) {
+                if (this.ws && this.isConnected) {
+                    this.ws.send(JSON.stringify(message));
+                    this.addMessage(`Sent: ${JSON.stringify(message, null, 2)}`, 'outgoing');
+                    this.messageCount++;
+                    this.updateStats();
+                } else {
+                    this.addMessage('Not connected to server', 'error');
+                }
+            }
+
+            sendAgentCommand() {
+                const command = document.getElementById('agentCommand').value.trim();
+                if (!command) {
+                    this.addMessage('Please enter a command', 'error');
+                    return;
+                }
+
+                const msg = {
+                    type: 'agent_command',
+                    command: command,
+                    timestamp: new Date().toISOString(),
+                    source: 'browser_client'
+                };
+
+                this.sendMessage(msg);
+                document.getElementById('agentCommand').value = '';
+            }
+
+            requestAgentList() {
+                if (!this.isConnected) {
+                    this.addMessage('Not connected to server', 'error');
+                    return;
+                }
+
+                const msg = {
+                    type: 'get_agents',
+                    timestamp: new Date().toISOString(),
+                    include_status: true,
+                    include_metrics: true
+                };
+                this.sendMessage(msg);
+                this.addMessage('Requested agent list from server', 'outgoing');
+            }
+
+            updateAgentListDisplay(agents) {
+                const agentList = document.getElementById('agentList');
+                const agentPlaceholder = document.getElementById('agentPlaceholder');
+                const agentStats = document.getElementById('agentStats');
+                
+                if (!agents || agents.length === 0) {
+                    agentPlaceholder.style.display = 'block';
+                    agentStats.style.display = 'none';
+                    return;
+                }
+
+                // Clear placeholder
+                agentPlaceholder.style.display = 'none';
+                agentStats.style.display = 'flex';
+
+                // Clear existing agent cards
+                agentList.innerHTML = '';
+
+                // Create agent cards
+                agents.forEach(agent => {
+                    const agentCard = this.createAgentCard(agent);
+                    agentList.appendChild(agentCard);
+                });
+
+                // Update statistics
+                this.updateAgentStatistics(agents);
+            }
+
+            createAgentCard(agent) {
+                const card = document.createElement('div');
+                card.className = 'agent-card';
+                
+                // Determine status color
+                let statusColor = '#a0aec0';
+                let statusText = 'Unknown';
+                
+                switch (agent.status?.toLowerCase()) {
+                    case 'active':
+                    case 'idle':
+                        statusColor = '#4caf50';
+                        statusText = 'Active';
+                        break;
+                    case 'busy':
+                        statusColor = '#ff9800';
+                        statusText = 'Busy';
+                        break;
+                    case 'error':
+                        statusColor = '#f44336';
+                        statusText = 'Error';
+                        break;
+                    case 'stopped':
+                        statusColor = '#9e9e9e';
+                        statusText = 'Stopped';
+                        break;
+                }
+
+                card.innerHTML = `
+                    <h4 style="color: ${statusColor}; margin: 0 0 10px 0;">${agent.name || 'Unnamed Agent'}</h4>
+                    <div class="agent-info">
+                        <div><strong>ID:</strong> ${agent.id || 'N/A'}</div>
+                        <div><strong>Type:</strong> ${agent.type || 'Unknown'}</div>
+                        <div><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span></div>
+                        ${agent.description ? `<div><strong>Description:</strong> ${agent.description}</div>` : ''}
+                        ${agent.last_heartbeat ? `<div><strong>Last Active:</strong> ${new Date(agent.last_heartbeat).toLocaleTimeString()}</div>` : ''}
+                        ${agent.active_tasks !== undefined ? `<div><strong>Active Tasks:</strong> ${agent.active_tasks}</div>` : ''}
+                        ${agent.completed_tasks !== undefined ? `<div><strong>Completed:</strong> ${agent.completed_tasks}</div>` : ''}
+                        ${agent.failed_tasks !== undefined ? `<div><strong>Failed:</strong> ${agent.failed_tasks}</div>` : ''}
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button onclick="client.sendAgentCommand('${agent.id}', 'status')" style="padding: 5px 10px; font-size: 12px;">Status</button>
+                        <button onclick="client.sendAgentCommand('${agent.id}', 'metrics')" style="padding: 5px 10px; font-size: 12px;">Metrics</button>
+                        ${agent.status === 'active' ? 
+                            `<button onclick="client.sendAgentCommand('${agent.id}', 'pause')" style="padding: 5px 10px; font-size: 12px; background: #ff9800;">Pause</button>` : ''}
+                        ${agent.status === 'stopped' || agent.status === 'error' ? 
+                            `<button onclick="client.sendAgentCommand('${agent.id}', 'start')" style="padding: 5px 10px; font-size: 12px; background: #4caf50;">Start</button>` : ''}
+                    </div>
+                `;
+
+                return card;
+            }
+
+            updateAgentStatistics(agents) {
+                const totalAgents = agents.length;
+                const activeAgents = agents.filter(a => a.status === 'active' || a.status === 'idle').length;
+                const busyAgents = agents.filter(a => a.status === 'busy').length;
+                const errorAgents = agents.filter(a => a.status === 'error').length;
+
+                document.getElementById('totalAgents').textContent = totalAgents;
+                document.getElementById('activeAgents').textContent = activeAgents;
+                document.getElementById('busyAgents').textContent = busyAgents;
+                document.getElementById('errorAgents').textContent = errorAgents;
+            }
+
+            testAgentCapabilities() {
+                const msg = {
+                    type: 'test_capabilities',
+                    timestamp: new Date().toISOString()
+                };
+                this.sendMessage(msg);
+            }
+
+            handleAgentList(agents) {
+                this.agentList = agents || [];
+                this.updateAgentListDisplay(this.agentList);
+                this.addMessage(`Received ${this.agentList.length} agents`, 'incoming');
+                
+                // Save agent list persistently
+                this.savePersistentData();
+            }
+
+            handleAgentResponse(response) {
+                this.addMessage(`Agent Response: ${JSON.stringify(response, null, 2)}`, 'incoming');
+            }
+            
+            handleSessionInfo(data) {
+                this.addMessage(`Session Info: ${JSON.stringify(data, null, 2)}`, 'incoming');
+                // Update session data from server
+                if (data.sessionId) {
+                    this.sessionId = data.sessionId;
+                }
+                if (data.expiresAt) {
+                    this.sessionExpiry = data.expiresAt;
+                }
+            }
+
+            updateAgentListDisplay() {
+                const container = document.getElementById('agentList');
+                container.innerHTML = '';
+
+                if (this.agentList.length === 0) {
+                    container.innerHTML = '<p>No agents available. Click "Refresh Agent List" to check for agents.</p>';
+                    return;
+                }
+
+                this.agentList.forEach(agent => {
+                    const card = document.createElement('div');
+                    card.className = 'agent-card';
+                    card.innerHTML = `
+                        <h4>${agent.name || agent.id || 'Unknown Agent'}</h4>
+                        <div class="agent-info">
+                            <div>ID: ${agent.id || 'N/A'}</div>
+                            <div>Status: ${agent.status || 'unknown'}</div>
+                            <div>Type: ${agent.type || 'N/A'}</div>
+                            <div>Last Seen: ${agent.lastSeen ? new Date(agent.lastSeen).toLocaleString() : 'N/A'}</div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            addMessage(content, type = 'incoming') {
+                const history = document.getElementById('messageHistory');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message message-${type}`;
+                messageDiv.textContent = `[${new Date().toLocaleTimeString()}] ${content}`;
+                
+                history.appendChild(messageDiv);
+                history.scrollTop = history.scrollHeight;
+                
+                // Limit history to prevent memory issues
+                if (history.children.length > 100) {
+                    history.removeChild(history.firstChild);
+                }
+            }
+
+            clearHistory() {
+                document.getElementById('messageHistory').innerHTML = '';
+                this.messageCount = 0;
+                this.updateStats();
+                
+                // Clear from localStorage too
+                localStorage.removeItem('mcp_message_history_html');
+            }
+
+            exportData() {
+                const data = {
+                    clientId: document.getElementById('clientId').value,
+                    serverUrl: document.getElementById('serverUrl').value,
+                    agents: this.agentList,
+                    messageCount: this.messageCount,
+                    exportTime: new Date().toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mcp-client-export-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            importData() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            
+                            if (data.clientId) {
+                                document.getElementById('clientId').value = data.clientId;
+                            }
+                            if (data.serverUrl) {
+                                document.getElementById('serverUrl').value = data.serverUrl;
+                            }
+                            if (data.agents) {
+                                this.agentList = data.agents;
+                                this.updateAgentListDisplay();
+                            }
+                            if (data.messageCount !== undefined) {
+                                this.messageCount = data.messageCount;
+                                this.updateStats();
+                            }
+                            
+                            this.savePersistentData();
+                            this.addMessage('Data imported successfully', 'incoming');
+                        } catch (error) {
+                            this.addMessage(`Import failed: ${error.message}`, 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            }
+
+            updateStats() {
+                document.getElementById('messageCount').textContent = this.messageCount;
+                
+                if (this.connectionStartTime) {
+                    const elapsed = Math.floor((new Date() - this.connectionStartTime) / 1000);
+                    document.getElementById('connectionTime').textContent = `${elapsed}s`;
+                }
+                
+                document.getElementById('agentCount').textContent = this.agentList.length;
+            }
+
+            startStatsUpdater() {
+                setInterval(() => {
+                    if (this.connectionStartTime && this.isConnected) {
+                        const elapsed = Math.floor((new Date() - this.connectionStartTime) / 1000);
+                        document.getElementById('connectionTime').textContent = `${elapsed}s`;
+                    }
+                }, 1000);
+            }
+        }
+
+        // Initialize the client when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.mcpClient = new WebSocketMCPClient();
+            
+            // Add a periodic save to ensure data persistence
+            setInterval(() => {
+                if (window.mcpClient) {
+                    window.mcpClient.savePersistentData();
+                }
+            }, 30000); // Save every 30 seconds
+        });
+
+        // Save data before page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.mcpClient) {
+                window.mcpClient.savePersistentData();
+            }
+        });
+    </script>
+</body>
+</html>

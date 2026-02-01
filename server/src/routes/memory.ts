@@ -2,23 +2,243 @@ import express from 'express';
 import { Logger } from '../utils/logger';
 import { executeQuery, getPool } from '../database/connection';
 import { TFIDFEmbeddingService } from '../services/embedding';
+const MemoryManagementAPI = require('../services/memory/memory-api');
 
 const router = express.Router();
 const logger = new Logger();
 let embeddingService: TFIDFEmbeddingService | null = null;
+let memoryAPI: typeof MemoryManagementAPI | null = null;
 
-// Initialize embedding service if database is available
-try {
-  const pool = getPool();
-  embeddingService = new TFIDFEmbeddingService(pool);
-} catch (error) {
-  logger.warn('Could not initialize embedding service:', error);
+// Initialize memory API lazily
+async function ensureMemoryAPI() {
+  if (!memoryAPI) {
+    try {
+      memoryAPI = new MemoryManagementAPI({
+        chromaConfig: {
+          host: 'localhost',
+          port: 8000
+        }
+      });
+      await memoryAPI.initialize();
+      logger.info('Advanced memory API initialized successfully');
+    } catch (error) {
+      logger.warn('Could not initialize advanced memory API:', error);
+    }
+  }
+  return memoryAPI;
+}
+
+// Initialize embedding service lazily when needed
+async function ensureEmbeddingService() {
+  if (!embeddingService) {
+    try {
+      const pool = getPool();
+      embeddingService = new TFIDFEmbeddingService(pool);
+      logger.info('Embedding service initialized successfully');
+    } catch (error) {
+      logger.warn('Could not initialize embedding service:', error);
+      throw error;
+    }
+  }
+  return embeddingService;
 }
 
 // Mock memory storage (for fallback purposes)
 const memoryStorage = new Map<string, any>();
 
+
+
 // Get conversations
+// Advanced memory API endpoints
+
+// Health check for advanced memory system
+router.get('/advanced/health', async (req, res) => {
+  try {
+    const api = await ensureMemoryAPI();
+    if (!api) {
+      return res.status(503).json({
+        success: false,
+        error: 'Advanced memory API not available'
+      });
+    }
+
+    const isReady = await api.isReady();
+    const stats = isReady ? await api.getMemoryStats() : null;
+    
+    return res.json({
+      success: true,
+      ready: isReady,
+      stats: stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to check advanced memory health:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Health check failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Insert document using advanced memory system
+router.post('/advanced/documents', async (req, res) => {
+  try {
+    const api = await ensureMemoryAPI();
+    
+    if (!api) {
+      return res.status(503).json({
+        success: false,
+        error: 'Advanced memory API not available'
+      });
+    }
+
+    const { text, metadata, collection } = req.body;
+    
+    if (!text) {
+      return res.status(400).json({
+        success: false,
+        error: 'Text is required'
+      });
+    }
+
+    const result = await api.insertDocument(
+      text,
+      metadata || {},
+      collection
+    );
+
+    return res.status(201).json({
+      success: true,
+      result: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to insert document via advanced API:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to insert document',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Retrieve context using advanced memory system
+router.get('/advanced/context', async (req, res) => {
+  try {
+    const api = await ensureMemoryAPI();
+    
+    if (!api) {
+      return res.status(503).json({
+        success: false,
+        error: 'Advanced memory API not available'
+      });
+    }
+
+    const { query, k = 5, collection, filters } = req.query;
+    
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter is required'
+      });
+    }
+
+    const result = await api.retrieveContext(
+      query,
+      parseInt(k as string),
+      collection as string || null,
+      filters ? JSON.parse(filters as string) : {}
+    );
+
+    return res.json({
+      success: true,
+      result: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to retrieve context via advanced API:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve context',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Semantic search using advanced memory system
+router.post('/advanced/search', async (req, res) => {
+  try {
+    const api = await ensureMemoryAPI();
+    
+    if (!api) {
+      return res.status(503).json({
+        success: false,
+        error: 'Advanced memory API not available'
+      });
+    }
+
+    const { query, threshold = 0.7, k = 10, collection } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query is required'
+      });
+    }
+
+    const result = await api.semanticSearch(
+      query,
+      threshold,
+      k,
+      collection || null
+    );
+
+    return res.json({
+      success: true,
+      result: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to perform semantic search via advanced API:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to perform search',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Get memory statistics
+router.get('/advanced/stats', async (req, res) => {
+  try {
+    await ensureMemoryAPI();
+    
+    if (!memoryAPI) {
+      return res.status(503).json({
+        success: false,
+        error: 'Advanced memory API not available'
+      });
+    }
+
+    const stats = await memoryAPI.getMemoryStats();
+    
+    return res.json({
+      success: true,
+      stats: stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get memory stats:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to get memory stats',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Original conversations endpoint
 router.get('/conversations', async (req, res) => {
     try {
         // Query conversations from database

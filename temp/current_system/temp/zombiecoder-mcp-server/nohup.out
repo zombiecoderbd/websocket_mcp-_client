@@ -1,0 +1,34 @@
+
+> zombiecoder-mcp-server@1.0.0 start
+> node src/index.js
+
+🚀 Initializing ZombieCoder MCP Server...
+✅ Database initialized successfully
+✅ Database initialized
+[32minfo[39m: Server initialization started {"service":"zombiecoder-mcp-server","timestamp":"2026-01-29T22:36:20.273Z"}
+✅ Logger initialized
+✅ MCP Server initialized
+📊 Admin API server listening on port 3002
+❌ Admin API server failed to start: Error: listen EADDRINUSE: address already in use :::3002
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at app.listen (/home/sahon/mcp-server/zombiecoder-mcp-server/node_modules/express/lib/application.js:605:24)
+    at /home/sahon/mcp-server/zombiecoder-mcp-server/src/AdminAPI.js:367:36
+    at new Promise (<anonymous>)
+    at AdminAPI.start (/home/sahon/mcp-server/zombiecoder-mcp-server/src/AdminAPI.js:366:16)
+    at ZombieCoderServer.initialize (/home/sahon/mcp-server/zombiecoder-mcp-server/src/Server.js:35:33)
+    at async ZombieCoderServer.start (/home/sahon/mcp-server/zombiecoder-mcp-server/src/Server.js:50:13)
+    at async main (/home/sahon/mcp-server/zombiecoder-mcp-server/src/index.js:9:9) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3002
+}
+✅ Admin API initialized
+[32minfo[39m: All components initialized successfully {"service":"zombiecoder-mcp-server","timestamp":"2026-01-29T22:36:20.304Z"}
+🎉 ZombieCoder MCP Server ready!
+[32minfo[39m: ZombieCoder MCP Server started successfully {"service":"zombiecoder-mcp-server","timestamp":"2026-01-29T22:36:20.310Z"}
+[32minfo[39m: Connection connected: stdio {"connectionType":"stdio","details":"MCP server initialized","ipAddress":"localhost","service":"zombiecoder-mcp-server","status":"connected","timestamp":"2026-01-29T22:36:20.316Z","userAgent":"mcp-client"}
+[32minfo[39m: ZombieCoder MCP Server is now running {"service":"zombiecoder-mcp-server","timestamp":"2026-01-29T22:36:20.324Z"}

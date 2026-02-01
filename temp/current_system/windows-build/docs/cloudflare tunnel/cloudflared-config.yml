@@ -1,0 +1,62 @@
+# Cloudflare Tunnel Configuration for Local Development
+# Save this file as: /etc/cloudflared/config.yml
+
+tunnel: YOUR_TUNNEL_UUID_HERE
+credentials-file: /etc/cloudflared/YOUR_TUNNEL_UUID_HERE.json
+
+# Ingress rules define how traffic is routed to your local services
+ingress:
+  # Main website - zombiecoder.my.id routes to Next.js frontend (port 3001)
+  - hostname: zombiecoder.my.id
+    service: http://localhost:3001
+  
+  # Application API - app.zombiecoder.my.id routes to TypeScript backend (port 8000)
+  - hostname: app.zombiecoder.my.id
+    service: http://localhost:8000
+    
+  # Special services - zombie.zombiecoder.my.id also routes to backend
+  - hostname: zombie.zombiecoder.my.id
+    service: http://localhost:8000
+    
+  # Health check endpoint for monitoring
+  - hostname: app.zombiecoder.my.id
+    path: /health
+    service: http://localhost:8000/health
+    
+  # Catch-all rule - returns 404 for unmatched requests
+  - service: http_status:404
+
+# Optional: Origin request settings
+originRequest:
+  # Timeout settings
+  connectTimeout: 30s
+  tlsTimeout: 10s
+  idleTimeout: 5m
+  
+  # HTTP settings
+  proxyAddress: 127.0.0.1
+  proxyPort: 0  # Random port
+  
+  # Disable keep-alive for development
+  disableKeepAlive: false
+  
+  # HTTP2 support
+  http2Origin: true
+
+# Logging configuration
+loglevel: info
+logfile: /var/log/cloudflared.log
+
+# Metrics endpoint for monitoring
+metrics: localhost:3001
+
+# Transport settings
+transport:
+  # Protocol version
+  protocol: auto
+  
+  # Connection pooling
+  connectionPool: 4
+  
+  # Buffer sizes
+  bufferSize: 1MB

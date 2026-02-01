@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Tunnel Domain Setup - zombiecoder.my.id</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 30px;
+        }
+        .domain-info {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+        .subdomain-list {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        .note {
+            background-color: #d1ecf1;
+            padding: 15px;
+            border-left: 4px solid #17a2b8;
+            margin: 15px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .dns-record {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloudflare Tunnel Domain Setup</h1>
+                
+                <div class="note">
+                    <h2>Why Use Cloudflare Tunnel?</h2>
+                    <p>Cloudflare Tunnel provides secure, encrypted connections between your origin servers and Cloudflare's global network without exposing your server IP addresses. Key benefits include:</p>
+                    <ul>
+                        <li><strong>Enhanced Security</strong>: Hides your origin server IP address, preventing direct attacks</li>
+                        <li><strong>End-to-End Encryption</strong>: All traffic between your server and Cloudflare is encrypted</li>
+                        <li><strong>Improved Reliability</strong>: Provides a stable connection even with changing IP addresses</li>
+                        <li><strong>Global Performance</strong>: Leverages Cloudflare's worldwide infrastructure for faster response times</li>
+                        <li><strong>Granular Access Control</strong>: Allows fine-grained control over who can access your applications</li>
+                    </ul>
+                </div>
+                
+                <div class="note">
+                    <h2>How Cloudflare Tunnel Works</h2>
+                    <p>Cloudflare Tunnel creates a persistent, secure connection from your origin server to Cloudflare's edge network. Instead of configuring firewalls or opening ports, the tunnel connects outbound to Cloudflare, establishing a secure channel through which HTTP requests are forwarded to your applications. This means your servers don't need to be publicly accessible, reducing your attack surface.</p>
+                </div>
+        
+        <div class="domain-info">
+            <h2>Main Domain: zombiecoder.my.id</h2>
+            <p><strong>Nameservers:</strong></p>
+            <ul>
+                <li>carmelo.ns.cloudflare.com</li>
+                <li>eloise.ns.cloudflare.com</li>
+            </ul>
+        </div>
+
+        <h2>Subdomains to be Added</h2>
+        <div class="subdomain-list">
+            <ul>
+                <li>app.zombiecoder.my.id</li>
+                <li>zombie.zombiecoder.my.id</li>
+            </ul>
+        </div>
+
+        <h2>Setup Plan</h2>
+        <div class="step">
+            <h3>Step 1: DNS Configuration</h3>
+            <p>Add the following nameservers to your domain registrar for zombiecoder.my.id:</p>
+            <div class="dns-record">
+                carmelo.ns.cloudflare.com<br>
+                eloise.ns.cloudflare.com
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Cloudflare Dashboard Setup</h3>
+            <ol>
+                <li>Log in to your Cloudflare account</li>
+                <li>Add the domain zombiecoder.my.id</li>
+                <li>Verify DNS records are imported correctly</li>
+                <li>Change the domain's DNS resolution to Cloudflare</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Cloudflared Installation</h3>
+            <ol>
+                <li>Install cloudflared on your origin server</li>
+                <li>Authenticate cloudflared with your Cloudflare account</li>
+                <li>Create a tunnel for your domain</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Subdomain Configuration</h3>
+            <p>Configure DNS records for subdomains:</p>
+            <ul>
+                <li>Create CNAME records for each subdomain pointing to your Cloudflare tunnel</li>
+                <li>Ensure SSL/TLS is set to "Full" or "Full (strict)"</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Step 5: Service Routing</h3>
+            <p>Configure routing for each subdomain to point to the correct services:</p>
+            <ul>
+                <li>app.zombiecoder.my.id → Application server</li>
+                <li>zombie.zombiecoder.my.id → Zombie service server</li>
+            </ul>
+        </div>
+
+        <h2>Real Benefits of This Setup</h2>
+                <div class="domain-info">
+                    <h3>For zombiecoder.my.id Domain:</h3>
+                    <ul>
+                        <li>Secure access to your main website without exposing server IP</li>
+                        <li>DDoS protection through Cloudflare's global network</li>
+                        <li>SSL termination at the edge for improved performance</li>
+                        <li>Automatic caching and optimization</li>
+                    </ul>
+                    
+                    <h3>For app.zombiecoder.my.id Subdomain:</h3>
+                    <ul>
+                        <li>Secure access to your applications</li>
+                        <li>Can be protected with Cloudflare Access for zero trust security</li>
+                        <li>Load balancing capabilities</li>
+                        <li>Custom routing rules</li>
+                    </ul>
+                    
+                    <h3>For zombie.zombiecoder.my.id Subdomain:</h3>
+                    <ul>
+                        <li>Secure access to specialized services</li>
+                        <li>Isolated security policies</li>
+                        <li>Independent scaling capabilities</li>
+                    </ul>
+                </div>
+                
+                <h2>Detailed Configuration Steps</h2>
+        <h3>Installing Cloudflared</h3>
+        <pre><code># Download and install cloudflared
+wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared-linux-amd64.deb</code></pre>
+
+        <h3>Creating a Tunnel</h3>
+        <pre><code># Authenticate cloudflared
+cloudflared tunnel login
+
+# Create a tunnel
+cloudflared tunnel create zombiecoder-tunnel
+
+# Configure the tunnel to route traffic
+cloudflared tunnel route dns zombiecoder-tunnel zombiecoder.my.id</code></pre>
+
+        <h3>Configuring Subdomains</h3>
+        <pre><code># Route subdomains to your origin server
+cloudflared tunnel route dns zombiecoder-tunnel app.zombiecoder.my.id
+cloudflared tunnel route dns zombiecoder-tunnel zombie.zombiecoder.my.id</code></pre>
+
+        <h3>Running the Tunnel</h3>
+        <pre><code># Run the tunnel as a service
+sudo cloudflared --config /etc/cloudflared/config.yml tunnel run zombiecoder-tunnel</code></pre>
+
+        <div class="note">
+            <h3>Important Notes</h3>
+            <ul>
+                <li>Ensure your origin server is accessible from the tunnel</li>
+                <li>Configure SSL/TLS settings appropriately in Cloudflare dashboard</li>
+                <li>Monitor tunnel health and connectivity regularly</li>
+                <li>Consider setting up health checks for your origin servers</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            <h3>Security Considerations</h3>
+            <ul>
+                <li>Use "Full (strict)" SSL/TLS mode when origin server has a valid certificate</li>
+                <li>Enable WAF (Web Application Firewall) rules in Cloudflare</li>
+                <li>Consider rate limiting to prevent abuse</li>
+                <li>Regularly rotate tunnel credentials</li>
+            </ul>
+        </div>
+
+        <h2>Troubleshooting</h2>
+        <ul>
+            <li>If DNS propagation takes too long, check TTL values</li>
+            <li>Verify tunnel status using <code>cloudflared tunnel list</code></li>
+            <li>Check tunnel logs with <code>cloudflared tunnel info [tunnel-name]</code></li>
+            <li>Test connectivity using <code>ping</code> or <code>curl</code> commands</li>
+        </ul>
+    </div>
+</body>
+</html>

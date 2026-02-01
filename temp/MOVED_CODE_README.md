@@ -1,8 +1,8 @@
 # Moved Demo/Experimental Code
 
-This directory contains code that has been moved from the main project structure for organizational clarity.
+This directory contains organized code that has been moved from the main project structure for better clarity, separation of concerns, and maintainability.
 
-## Contents
+## 📁 Directory Structure
 
 ### `/mcp-server-demo/`
 **Original Location**: `/packages/zombiecoder-mcp-server/`
@@ -15,12 +15,92 @@ This directory contains code that has been moved from the main project structure
 - Additional dependency packages (LangChain integration)
 - Experimental agent factory and identity systems
 
-### Why This Organization?
+### `/demo-implementations/`
+**Content**: Working examples and demonstration code
+- Complete editor agent implementations
+- Various agent implementations and utilities
+- Bridge and integration scripts
+- Simulator and testing implementations
 
-1. **Clear Separation**: Production code (`/packages/mcp-server/`) vs Demo code (`/temp/mcp-server-demo/`)
-2. **Reduced Confusion**: Prevents mixing experimental features with production-ready components
-3. **Dependency Management**: Keeps production dependencies minimal and clean
-4. **Future Development**: Demo code can be referenced for future feature implementation
+### `/experimental-features/`
+**Content**: Work-in-progress and testing code
+- Test scripts and verification tools
+- Experimental WebSocket and MCP client implementations
+- Cloud provider testing features
+- Connection and integration tests
+
+### `/proof-of-concepts/`
+**Content**: Early-stage implementations and prototypes
+- WebSocket MCP client implementations
+- Enhanced MCP client variations
+- Real-time technical test implementations
+- System demonstration scripts
+
+### `/old-documentation/`
+**Content**: Historical documentation and system overviews
+- System architecture documents
+- Zombiecoder system overviews
+- Technical documentation in Bengali
+- Historical implementation summaries
+
+## 🎯 Purpose and Guidelines
+
+### What Belongs Here
+- ✅ Experimental or demonstration code
+- ✅ Deprecated but reference-worthy code
+- ✅ Code being refactored or reorganized
+- ✅ Temporary backups of working implementations
+- ✅ Proof-of-concept implementations
+
+### What Does NOT Belong Here
+- ❌ Production-ready code
+- ❌ Core system functionality
+- ❌ Active development branches
+- ❌ Code currently in use by the system
+
+### Usage Guidelines
+- 🔧 **Development Only**: Code here is for development, testing, and reference
+- 🚫 **No Production Use**: Never use code from this directory in production
+- 📋 **Regular Cleanup**: Perform monthly reviews to remove obsolete code
+- 🏷️ **Clear Labeling**: All files should indicate their experimental nature
+- 📝 **Documentation**: Each subdirectory should have clear README files
+
+## 🔍 Quick Reference
+
+### For Developers
+```bash
+# View demo implementations
+cd /home/sahon/admin/temp/demo-implementations
+
+# Check experimental features
+cd /home/sahon/admin/temp/experimental-features
+
+# Review proof of concepts
+cd /home/sahon/admin/temp/proof-of-concepts
+```
+
+### For System Understanding
+- **Current Production Code**: Located in `/packages/` and `/server/src/`
+- **Documentation**: Main documentation in `/docs/`
+- **System Status**: Check `SHORT_TERM_MEMORY.md` for current status
+
+## 📊 Recent Organization Activities
+
+### January 31, 2026
+- ✅ Moved `/packages/zombiecoder-mcp-server/` to `/temp/mcp-server-demo/`
+- ✅ Organized HTML files into appropriate categories
+- ✅ Separated JavaScript demo files from production code
+- ✅ Created clear directory structure with README documentation
+- ✅ Established guidelines for future organization
+
+### Verification
+All moved code has been:
+- ✅ Catalogued in this README
+- ✅ Organized by purpose and functionality
+- ✅ Labeled appropriately
+- ✅ Made easily accessible for reference
+
+## 🔄 Integration Status
 
 ### Production MCP Server
 The main MCP server implementation remains at `/packages/mcp-server/` which contains:
@@ -28,6 +108,13 @@ The main MCP server implementation remains at `/packages/mcp-server/` which cont
 - Core functionality only
 - Minimal external dependencies
 - Production-ready code
+
+### Demo/Experimental Code
+This directory contains extended implementations that:
+- Demonstrate advanced features
+- Test integration possibilities
+- Provide reference implementations
+- Support experimental development
 
 ### Reference for Future Work
 This demo code can be referenced when:
@@ -38,3 +125,4 @@ This demo code can be referenced when:
 
 ---
 *Last Updated: February 1, 2026*
+*Maintainer: System Administrator*
