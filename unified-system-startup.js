@@ -46,7 +46,7 @@ const CONFIG = {
         },
         mcp_server: {
             name: 'MCP Server',
-            path: '/home/sahon/admin/packages/zombiecoder-mcp-server',
+            path: '/home/sahon/admin/packages/mcp-server',
             command: 'npm',
             args: ['run', 'dev'],
             port: 3002,
