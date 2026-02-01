@@ -1,0 +1,203 @@
+{
+  "project": {
+    "name": "Advanced AI Agent System",
+    "version": "2.0.0",
+    "description": "Dynamic agent management system with RAG pipeline, MCP integration, and proxy architecture",
+    "last_updated": "2026-01-31"
+  },
+  "architecture": {
+    "core_components": [
+      {
+        "name": "Admin Panel",
+        "path": "/app/admin",
+        "description": "Dynamic agent configuration and management interface",
+        "status": "active",
+        "technologies": ["Next.js", "React", "TypeScript", "Tailwind CSS"]
+      },
+      {
+        "name": "Dynamic Configuration Service",
+        "path": "/server/src/services/dynamic-config.ts",
+        "description": "Real-time configuration management with database polling",
+        "status": "active",
+        "features": ["real-time updates", "caching", "event emission"]
+      },
+      {
+        "name": "MCP Proxy Service",
+        "path": "/server/src/services/mcp-proxy.ts",
+        "description": "Proxy pattern implementation for MCP server communication",
+        "status": "active",
+        "protocols": ["HTTP/RPC", "WebSocket", "STDIO"]
+      },
+      {
+        "name": "RAG Pipeline",
+        "path": "/packages/agents/rag-pipeline",
+        "description": "Retrieval Augmented Generation with semantic search and LLM integration",
+        "status": "active",
+        "components": ["query processor", "context retriever", "response generator"]
+      },
+      {
+        "name": "LSP/DAP Integration",
+        "path": "/packages/lsp-dap",
+        "description": "Language Server Protocol and Debug Adapter Protocol proxy services",
+        "status": "active",
+        "supported_protocols": ["LSP", "DAP"]
+      },
+      {
+        "name": "Editor Integration",
+        "path": "/app/editor",
+        "description": "Code editor with AI agent integration",
+        "status": "active",
+        "features": ["real-time collaboration", "AI assistance", "context awareness"]
+      }
+    ],
+    "communication_patterns": {
+      "proxy_pattern": {
+        "description": "Frontend ↔ Backend API ↔ MCP Server",
+        "implementation": "/server/src/services/mcp-proxy.ts"
+      },
+      "persona_integration": {
+        "description": "Agent-specific response generation with transparency",
+        "implementation": "/server/src/services/ollama.ts"
+      },
+      "real_time_config": {
+        "description": "Dynamic configuration updates without restart",
+        "implementation": "/server/src/services/dynamic-config.ts"
+      }
+    }
+  },
+  "documentation": {
+    "main_docs": [
+      {
+        "file": "docs/MASTER_DOCUMENTATION_INDEX.md",
+        "type": "index",
+        "description": "Main documentation index and navigation"
+      },
+      {
+        "file": "docs/system_overview_bn.md",
+        "type": "overview",
+        "description": "System overview in Bengali"
+      },
+      {
+        "file": "docs/database_architecture.md",
+        "type": "architecture",
+        "description": "Database schema and design"
+      },
+      {
+        "file": "docs/rag-pipeline-implementation.md",
+        "type": "implementation",
+        "description": "RAG pipeline implementation details"
+      },
+      {
+        "file": "docs/architecture/MCP-Editor Agent Architecture.md",
+        "type": "architecture",
+        "description": "MCP-Editor agent architecture specification"
+      }
+    ],
+    "api_docs": [
+      {
+        "file": "docs/api/",
+        "type": "api",
+        "description": "API documentation and specifications"
+      }
+    ],
+    "development_docs": [
+      {
+        "file": "docs/development/",
+        "type": "development",
+        "description": "Development guidelines and practices"
+      }
+    ]
+  },
+  "services": {
+    "backend": {
+      "port": 3001,
+      "routes": {
+        "agent_management": "/api/admin/agents",
+        "chat": "/api/chat",
+        "proxy": "/api/proxy",
+        "editor": "/api/editor"
+      },
+      "database": {
+        "type": "MySQL",
+        "host": "localhost",
+        "port": 3306,
+        "name": "zombiecoder"
+      }
+    },
+    "frontend": {
+      "port": 3000,
+      "framework": "Next.js"
+    },
+    "mcp_server": {
+      "port": 3002,
+      "protocol": "HTTP/RPC",
+      "implementation": "/packages/mcp-server/",
+      "demo_code": "/temp/mcp-server-demo/"
+    }
+  },
+  "deployment": {
+    "cloudflare_tunnel": {
+      "config": "docs/cloudflare tunnel/cloudflared-config.yml",
+      "status": "configured"
+    },
+    "environment": {
+      "development": {
+        "database_url": "mysql://localhost:3306/zombiecoder",
+        "ollama_url": "http://localhost:11434"
+      }
+    }
+  },
+  "features": {
+    "dynamic_agents": {
+      "status": "implemented",
+      "description": "Runtime agent configuration and management",
+      "files": [
+        "/server/src/services/dynamic-config.ts",
+        "/server/src/routes/agent-management.ts",
+        "/components/agent-management/"
+      ]
+    },
+    "persona_awareness": {
+      "status": "implemented",
+      "description": "Agent-specific response generation with Bengali transparency",
+      "files": [
+        "/server/src/services/ollama.ts",
+        "/server/src/routes/chat.ts"
+      ]
+    },
+    "proxy_pattern": {
+      "status": "implemented",
+      "description": "MCP proxy service for frontend-backend communication",
+      "files": [
+        "/server/src/services/mcp-proxy.ts"
+      ]
+    },
+    "rag_pipeline": {
+      "status": "implemented",
+      "description": "Retrieval Augmented Generation with semantic search",
+      "files": [
+        "/packages/agents/rag-pipeline/"
+      ]
+    },
+    "lsp_dap_integration": {
+      "status": "implemented",
+      "description": "Language Server and Debug Adapter Protocol proxy",
+      "files": [
+        "/packages/lsp-dap/"
+      ]
+    }
+  },
+  "recent_changes": {
+    "date": "2026-01-31",
+    "updates": [
+      "Implemented dynamic agent configuration service",
+      "Added real-time configuration polling",
+      "Created MCP proxy pattern implementation",
+      "Enhanced chat service with persona integration",
+      "Added transparent Bengali error handling",
+      "Implemented agent management API endpoints",
+      "Organized MCP servers - separated production from demo code",
+      "Created comprehensive development guidelines and documentation standards"
+    ]
+  }
+}

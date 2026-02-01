@@ -652,4 +652,114 @@ export class OllamaService {
             };
         }
     }
+
+    // Add method for generating responses with persona
+    async generateWithPersona(messages: ChatMessage[], agentId: number, model?: string): Promise<string> {
+        try {
+            // Get agent configuration
+            const agentConfig = await this.getAgentConfig(agentId);
+            
+            if (!agentConfig) {
+                throw new Error(`Agent with ID ${agentId} not found or not configured`);
+            }
+
+            // Process messages through persona transformation
+            const processedMessages = await this.applyPersonaToMessages(messages, agentConfig);
+
+            // Generate response
+            const response = await this.chat(processedMessages, model);
+
+            // Apply response template based on transparency mode
+            const finalResponse = await this.applyResponseTemplate(response, agentConfig, 'success');
+
+            return finalResponse;
+        } catch (error) {
+            // Handle error based on agent's error handling strategy
+            const agentConfig = await this.getAgentConfig(agentId);
+            const errorResponse = await this.handleErrorResponse(error, agentConfig);
+            return errorResponse;
+        }
+    }
+
+    private async getAgentConfig(agentId: number): Promise<any> {
+        // Import dynamicConfigService here to avoid circular dependency
+        const { dynamicConfigService } = await import('./dynamic-config');
+        return dynamicConfigService.getAgentConfig(agentId);
+    }
+
+    private async applyPersonaToMessages(messages: ChatMessage[], agentConfig: any): Promise<ChatMessage[]> {
+        // Apply greeting prefix and signature to system messages
+        const processedMessages: ChatMessage[] = [];
+
+        for (const message of messages) {
+            if (message.role === 'system') {
+                // Enhance system message with persona information
+                const enhancedContent = `${agentConfig.signature_prefix || 'জম্বি কোডার সিস্টেম থেকে বলছি...'} ${message.content}`;
+                processedMessages.push({
+                    ...message,
+                    content: enhancedContent
+                });
+            } else if (message.role === 'user') {
+                // Optionally process user messages based on agent type
+                processedMessages.push(message);
+            } else {
+                // For assistant responses, we'll process them after generation
+                processedMessages.push(message);
+            }
+        }
+
+        return processedMessages;
+    }
+
+    private async applyResponseTemplate(response: string, agentConfig: any, responseType: string = 'success'): Promise<string> {
+        if (!agentConfig) return response;
+
+        // Import dynamicConfigService here to avoid circular dependency
+        const { dynamicConfigService } = await import('./dynamic-config');
+        
+        // Get appropriate template
+        const template = dynamicConfigService.getAgentTemplate(agentConfig.id, responseType);
+        
+        if (template) {
+            // Replace placeholders in template
+            let templatedResponse = template.template_content
+                .replace('{greeting_prefix}', agentConfig.greeting_prefix || 'ভাইয়া,')
+                .replace('{response}', response)
+                .replace('{signature_prefix}', agentConfig.signature_prefix || 'জম্বি কোডার সিস্টেম থেকে বলছি...');
+
+            return templatedResponse;
+        }
+
+        // If no template, apply basic persona
+        return `${agentConfig.greeting_prefix || 'ভাইয়া,'} ${response}`;
+    }
+
+    private async handleErrorResponse(error: any, agentConfig: any): Promise<string> {
+        if (!agentConfig) {
+            return 'ভাইয়া, আমি আপনার অনুরোধটি প্রসেস করতে পারছি না। সিস্টেমে কিছু সমস্যা হতে পারে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।';
+        }
+
+        // Determine error type and get appropriate template
+        let templateType = 'error';
+        if (error.message && (error.message.includes('timeout') || error.message.includes('connection'))) {
+            templateType = 'server_down';
+        } else if (error.message && (error.message.includes('not found') || error.message.includes('no data'))) {
+            templateType = 'data_not_found';
+        } else {
+            templateType = 'capability_restriction';
+        }
+
+        // Import dynamicConfigService here to avoid circular dependency
+        const { dynamicConfigService } = await import('./dynamic-config');
+        
+        const template = dynamicConfigService.getAgentTemplate(agentConfig.id, templateType);
+        
+        if (template) {
+            return template.template_content
+                .replace('{greeting_prefix}', agentConfig.greeting_prefix || 'ভাইয়া,');
+        }
+
+        // Default error response
+        return `${agentConfig.greeting_prefix || 'ভাইয়া,'} আমি আপনার অনুরোধটি প্রসেস করতে পারছি না। সিস্টেমে কিছু সমস্যা হতে পারে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।`;
+    }
 }

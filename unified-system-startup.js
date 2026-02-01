@@ -6,7 +6,6 @@ const { exec, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-
 // System configuration
 const CONFIG = {
     // Service ports
@@ -16,7 +15,6 @@ const CONFIG = {
         mcp_server: 3002,    // MCP server
         websocket: 3003,     // WebSocket server
         websocket_mcp: 8080, // WebSocket MCP server
-        lsp_dap: 3004,       // LSP-DAP server (avoiding 3001)
         database: 3306       // MySQL database
     },
     
@@ -48,7 +46,7 @@ const CONFIG = {
         },
         mcp_server: {
             name: 'MCP Server',
-            path: '/home/sahon/admin/packages/zombiecoder-mcp-server',
+            path: '/home/sahon/admin/packages/mcp-server',
             command: 'npm',
             args: ['run', 'dev'],
             port: 3002,
@@ -68,17 +66,6 @@ const CONFIG = {
                 NODE_ENV: 'development'
             },
             readyIndicators: ['WebSocket server listening', 'ready', 'started']
-        },
-        lsp_dap: {
-            name: 'LSP-DAP Server',
-            path: '/home/sahon/admin/packages/lsp-dap',
-            command: 'node',
-            args: ['--inspect=0.0.0.0:3004', 'src/index.js', '--stdio'], // Using stdio mode for LSP
-            port: 3004,
-            env: {
-                NODE_ENV: 'development'
-            },
-            readyIndicators: ['LSP-DAP server listening', 'ready', 'initialized', 'connection', 'listening for connections']
         }
     },
     
@@ -86,16 +73,14 @@ const CONFIG = {
     healthChecks: {
         frontend: `http://localhost:3001/api/health`,
         backend: `http://localhost:8000/health`,
-        mcp_server: `http://localhost:3002/api/health`,
-        lsp_dap: `http://localhost:3004/health`  // LSP-DAP health check (if available)
+        mcp_server: `http://localhost:3002/api/health`
     },
     
     // Browser URLs to open
     browserUrls: [
         `http://localhost:3001`,           // Admin Panel
         `http://localhost:8080/client`,    // WebSocket Client
-        `http://localhost:3002/admin`,     // MCP Admin
-        `http://localhost:3004`            // LSP-DAP server
+        `http://localhost:3002/admin`      // MCP Admin
     ]
 };
 
@@ -189,43 +174,37 @@ const utils = {
 
 // System management functions
 const system = {
-    // Enhanced shutdown function to stop old server instances
-    shutdownOldInstances: async () => {
-        utils.log('Shutting down all existing server instances...', 'info');
-        
-        // Kill processes on all configured ports
-        for (const [name, port] of Object.entries(CONFIG.ports)) {
-            utils.log(`Shutting down processes on port ${port} (${name})...`, 'info');
-            await utils.killPortProcesses(port);
-        }
-        
-        // Additional cleanup for common development ports
-        const extraPorts = [56510, 3000, 3005, 3006, 3007, 3008, 3009, 3010]; // Common dev ports
-        for (const port of extraPorts) {
-            await utils.killPortProcesses(port);
-        }
-        
-        // Wait for processes to fully terminate
-        await utils.wait(3000);
-        utils.log('All old server instances have been terminated.', 'success');
-    },
-    
     cleanPorts: async () => {
         utils.log('Cleaning all required ports...', 'info');
         
+        // Kill all Node.js and Next.js processes first
+        try {
+            utils.log('Killing existing Node.js and Next.js processes...', 'info');
+            await utils.execPromise('pkill -f "node.*dev" 2>/dev/null || true');
+            await utils.execPromise('pkill -f "next dev" 2>/dev/null || true');
+            await utils.execPromise('pkill -f "next-server" 2>/dev/null || true');
+            await utils.execPromise('pkill -f "nodemon" 2>/dev/null || true');
+            await utils.wait(2000);
+        } catch (error) {
+            utils.log('No existing Node processes to terminate', 'info');
+        }
+        
+        // Clean specific ports
         for (const [name, port] of Object.entries(CONFIG.ports)) {
             utils.log(`Cleaning port ${port} (${name})...`, 'info');
             await utils.killPortProcesses(port);
         }
         
         // Additional cleanup for common development ports
-        const extraPorts = [56510]; // Qoder ports
+        const extraPorts = [3001, 56510]; // Frontend and Qoder ports
         for (const port of extraPorts) {
             await utils.killPortProcesses(port);
         }
         
-        utils.log('Port cleaning completed!', 'success');
+        // Wait for processes to fully terminate
         await utils.wait(3000);
+        
+        utils.log('Port cleaning completed!', 'success');
     },
     
     startService: async (serviceName, serviceConfig) => {
@@ -332,7 +311,6 @@ const system = {
         console.log(`MCP Server:            http://localhost:${CONFIG.ports.mcp_server}/admin`);
         console.log(`WebSocket MCP Server:  http://localhost:${CONFIG.ports.websocket_mcp}`);
         console.log(`WebSocket Client:      http://localhost:${CONFIG.ports.websocket_mcp}/client`);
-        console.log(`LSP-DAP Server:        http://localhost:${CONFIG.ports.lsp_dap}`);
         console.log('='.repeat(70));
         console.log('\n💡 To stop all services, press Ctrl+C');
         console.log('📁 Documentation:      /home/sahon/admin/docs/MASTER_DOCUMENTATION_INDEX.md');
@@ -341,14 +319,13 @@ const system = {
     setupShutdownHandler: (processes) => {
         const shutdown = async () => {
             utils.log('Shutting down UAS system...', 'warning');
-            utils.log('Shutting down all services including LSP-DAP server...', 'warning');
             
             for (const [name, process] of Object.entries(processes)) {
                 if (process && !process.killed) {
                     try {
                         utils.log(`Stopping ${name} process ${process.pid}...`, 'info');
                         process.kill('SIGTERM');
-                        await utils.wait(2000); // Give more time for graceful shutdown
+                        await utils.wait(1000);
                         process.kill('SIGKILL');
                     } catch (error) {
                         utils.log(`${name} process ${process.pid} already stopped`, 'warning');
@@ -356,7 +333,7 @@ const system = {
                 }
             }
             
-            utils.log('All services stopped successfully', 'success');
+            utils.log('All services stopped', 'success');
             process.exit(0);
         };
         
@@ -371,23 +348,20 @@ async function start() {
     console.log('='.repeat(50));
     
     try {
-        // Step 1: Shutdown all old server instances (purata server gulo shutdown korte hobe)
-        await system.shutdownOldInstances();
-        
-        // Step 2: Clean all ports
+        // Step 1: Clean all ports
         await system.cleanPorts();
         
-        // Step 3: Start services in proper sequence
+        // Step 2: Start services in proper sequence
         utils.log('Starting services in sequence...', 'info');
         const runningProcesses = {};
         
         // Start backend first (foundation)
         runningProcesses.backend = await system.startService('backend', CONFIG.services.backend);
-        await utils.wait(3000);
+        await utils.wait(5000); // Wait longer for database initialization and dynamic config service
         
         // Start frontend
         runningProcesses.frontend = await system.startService('frontend', CONFIG.services.frontend);
-        await utils.wait(2000);
+        await utils.wait(3000);
         
         // Start MCP server
         runningProcesses.mcp_server = await system.startService('mcp_server', CONFIG.services.mcp_server);
@@ -395,22 +369,18 @@ async function start() {
         
         // Start WebSocket MCP server
         runningProcesses.websocket_mcp = await system.startService('websocket_mcp', CONFIG.services.websocket_mcp);
-        await utils.wait(2000);
         
-        // Start LSP-DAP server
-        runningProcesses.lsp_dap = await system.startService('lsp_dap', CONFIG.services.lsp_dap);
-        
-        // Step 4: Wait for services to stabilize
+        // Step 3: Wait for services to stabilize
         utils.log('Waiting for services to stabilize...', 'info');
         await utils.wait(5000);
         
-        // Step 5: Verify services
+        // Step 4: Verify services
         const servicesReady = await system.verifyServices();
         
-        // Step 6: Open in browser
+        // Step 5: Open in browser
         await system.openBrowser();
         
-        // Step 7: Display final status
+        // Step 6: Display final status
         system.displayStatus();
         
         if (servicesReady) {

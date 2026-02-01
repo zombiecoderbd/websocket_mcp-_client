@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import fs from "fs"
 import path from "path"
+import { DatabaseConnection } from "@/lib/database"
 
 // Advanced ZombieCoder Agent Implementation
 class ZombieCoderAgent {
@@ -10,19 +11,20 @@ class ZombieCoderAgent {
   private currentPersona: string
 
   constructor() {
-    this.loadIdentity()
-    this.initializePersonas()
-    this.memory = []
-    this.currentPersona = "professional"
+    this.loadIdentity();
+    this.initializePersonas();
+    this.memory = [];
+    this.currentPersona = "professional";
   }
 
   private loadIdentity() {
     try {
+      // Fallback to file
       const identityPath = path.join(process.cwd(), "identity.json")
       const identityData = fs.readFileSync(identityPath, "utf8")
       this.identity = JSON.parse(identityData)
     } catch (error) {
-      // Fallback identity
+      // Final fallback identity
       this.identity = {
         system_identity: {
           name: "ZombieCoder",
@@ -31,6 +33,36 @@ class ZombieCoderAgent {
           location: "Dhaka, Bangladesh"
         }
       }
+    }
+  }
+  
+  private async fetchIdentityFromDatabase() {
+    try {
+      const results: any[] = await DatabaseConnection.executeQuery(
+        `SELECT setting_key, setting_value FROM system_settings 
+         WHERE setting_key LIKE 'system_%'`
+      );
+      
+      if (results && results.length > 0) {
+        const identity: { system_identity: any } = { system_identity: {} };
+        results.forEach((row: any) => {
+          const key = row.setting_key.replace('system_', '');
+          identity.system_identity[key] = row.setting_value;
+        });
+        
+        // Ensure required fields exist
+        identity.system_identity.name = identity.system_identity.name || "ZombieCoder";
+        identity.system_identity.owner = identity.system_identity.owner || "Sahon Srabon";
+        identity.system_identity.organization = identity.system_identity.organization || "Developer Zone";
+        identity.system_identity.location = identity.system_identity.location || "Dhaka, Bangladesh";
+        
+        return identity;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error fetching identity from database:", error);
+      return null;
     }
   }
 
@@ -57,7 +89,7 @@ class ZombieCoderAgent {
     }
   }
 
-  public processMessage(message: string): string {
+  public async processMessage(message: string): Promise<string> {
     // Add to memory
     this.memory.push({
       role: "user",
@@ -76,12 +108,14 @@ class ZombieCoderAgent {
       return response
     }
 
+    // Fetch authentic contextual information from database
+    const context = await this.getAuthenticContext(message);
+    
     // Generate persona-based response
     const persona = this.personas[this.currentPersona]
     let response = persona.response_template.replace("{message}", message)
     
-    // Add contextual information
-    const context = this.getRelevantContext(message)
+    // Add authentic contextual information
     if (context.length > 0) {
       response += "\n\nসম্পর্কিত তথ্য:\n" + context.join("\n")
     }
@@ -94,6 +128,30 @@ class ZombieCoderAgent {
     })
 
     return response
+  }
+  
+  private async getAuthenticContext(message: string): Promise<string[]> {
+    try {
+      // Connect to database and fetch authentic context
+      const results = await DatabaseConnection.executeQuery(
+        `SELECT content, metadata FROM agent_memory 
+         WHERE content_type IN ('knowledge', 'context') 
+         AND (JSON_SEARCH(LOWER(content), 'one', LOWER(?)) IS NOT NULL 
+              OR JSON_SEARCH(LOWER(JSON_EXTRACT(metadata, '$.tags')), 'one', LOWER(?)) IS NOT NULL)
+         ORDER BY created_at DESC LIMIT 5`,
+        [message.toLowerCase(), message.toLowerCase()]
+      );
+      
+      if (Array.isArray(results) && results.length > 0) {
+        return results.map((row: any) => row.content || row.summary || 'Related information');
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching authentic context:', error);
+      // Return empty array if database fails
+      return [];
+    }
   }
 
   private isIdentityQuery(message: string): boolean {
@@ -194,7 +252,7 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    const response = agent.processMessage(message)
+    const response = await agent.processMessage(message)
     
     return NextResponse.json({
       success: true,

@@ -1,8 +1,25 @@
 # Master Documentation Index
 
-This is the central documentation hub for the UAS Admin System. All documentation is organized by category for easy navigation.
+This is the central documentation hub for the UAS Admin System. All documentation is organized by category for easy navigation. **See [project-index.json](../project-index.json) for comprehensive system overview and component mapping.**
 
 ## 📚 Documentation Categories
+
+### System Integration Updates (2026-01-31)
+
+#### Dynamic Agent Configuration
+- **Dynamic Config Service**: `/server/src/services/dynamic-config.ts` - Real-time configuration with database polling
+- **Agent Management API**: `/server/src/routes/agent-management.ts` - Full CRUD operations for agents
+- **Persona Integration**: `/server/src/services/ollama.ts` - Agent-specific response generation with Bengali transparency
+
+#### Proxy Pattern Implementation
+- **MCP Proxy Service**: `/server/src/services/mcp-proxy.ts` - Standardized frontend-backend-MCP communication
+- **Chat Service**: `/server/src/routes/chat.ts` - Persona-aware chat with error handling
+- **Editor Integration**: `/app/editor/` - AI-assisted code editing
+
+#### RAG Pipeline Enhancements
+- **Query Processor**: Enhanced natural language understanding
+- **Context Retriever**: Improved semantic search capabilities
+- **Response Generator**: Persona-consistent LLM integration
 
 ### 1. System Architecture
 Core system design and architectural documentation.
@@ -107,6 +124,13 @@ The UAS Admin System consists of:
 5. **WebSocket Server** - Real-time communication
 6. **Services** - Various microservices
 
+### Recent Component Additions (2026-01-31)
+
+7. **Dynamic Configuration Service** - Runtime agent management
+8. **MCP Proxy Service** - Standardized communication pattern
+9. **Persona-aware Response System** - Agent-specific communication
+10. **Real-time Configuration Updates** - Polling-based configuration sync
+
 ## 📞 Support
 
 For issues and questions:
@@ -114,6 +138,24 @@ For issues and questions:
 - Review [Development Guide](./development/DEVELOPMENT.md)
 - Refer to specific component documentation in respective directories
 
+## 🔄 Recent System Updates (2026-01-31)
+
+### Major Enhancements Implemented
+- ✅ Dynamic agent configuration with real-time updates
+- ✅ Proxy pattern implementation for standardized communication
+- ✅ Persona-aware response generation with Bengali transparency
+- ✅ Enhanced RAG pipeline with improved context retrieval
+- ✅ LSP/DAP proxy services for editor integration
+- ✅ Comprehensive error handling and system monitoring
+
+### Key Files Updated
+- `/server/src/services/dynamic-config.ts` - New dynamic configuration service
+- `/server/src/routes/agent-management.ts` - Agent CRUD operations
+- `/server/src/services/mcp-proxy.ts` - MCP proxy implementation
+- `/server/src/services/ollama.ts` - Persona integration
+- `/docs/rag-pipeline-implementation.md` - Updated RAG documentation
+- `/project-index.json` - Comprehensive system index
+
 ---
 *Last Updated: January 31, 2026*
-*Version: 1.0*
+*Version: 2.0.0*

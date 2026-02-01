@@ -1,0 +1,9 @@
+# Windows Build Script
+# This script sets up the environment for Windows users
+
+@echo off
+echo Setting up Windows environment...
+echo Installing dependencies...
+npm install
+echo Starting development server...
+npm run dev

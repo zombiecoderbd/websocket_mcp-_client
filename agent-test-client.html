@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Testing Client</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            margin: 20px; 
+            background: #000; 
+            color: #0f0; 
+        }
+        #messages { 
+            height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid #0f0; 
+            padding: 10px; 
+            margin: 10px 0; 
+            background: #001a00;
+        }
+        .message { 
+            margin: 5px 0; 
+            padding: 5px; 
+            border-left: 3px solid #0f0;
+        }
+        .outgoing { background: rgba(0,255,0,0.1); }
+        .incoming { background: rgba(0,100,0,0.1); }
+        button { 
+            background: #001a00; 
+            color: #0f0; 
+            border: 1px solid #0f0; 
+            padding: 5px 10px; 
+            margin: 5px; 
+            cursor: pointer; 
+        }
+        input, select { 
+            background: #001a00; 
+            color: #0f0; 
+            border: 1px solid #0f0; 
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📡 WebSocket Agent Communication Test</h1>
+    
+    <div>
+        <label>Server URL:</label>
+        <input type="text" id="serverUrl" value="ws://localhost:8080" style="width: 200px;">
+        <button onclick="connectWebSocket()">Connect</button>
+        <button onclick="disconnectWebSocket()">Disconnect</button>
+        <span id="status">Disconnected</span>
+    </div>
+    
+    <div id="messages"></div>
+    
+    <div>
+        <h3>Test Commands:</h3>
+        <select id="commandSelect">
+            <option value="get_agent_list">Get Agent List</option>
+            <option value="get_agent_metadata">Get Agent Metadata</option>
+            <option value="execute_agent_task">Execute Agent Task</option>
+        </select>
+        <input type="text" id="agentId" placeholder="Agent ID (for metadata/task)" value="agent-1">
+        <input type="text" id="taskInput" placeholder="Task description" value="Analyze code structure">
+        <button onclick="sendAgentCommand()">Send Command</button>
+        <button onclick="sendPing()">Ping Server</button>
+    </div>
+    
+    <script>
+        let ws = null;
+        
+        function logMessage(message, type = 'info') {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function connectWebSocket() {
+            const serverUrl = document.getElementById('serverUrl').value;
+            logMessage(`Connecting to ${serverUrl}...`);
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            try {
+                ws = new WebSocket(serverUrl);
+                
+                ws.onopen = function(event) {
+                    logMessage('✅ Connected to WebSocket server', 'incoming');
+                    document.getElementById('status').textContent = 'Connected';
+                    document.getElementById('status').style.color = '#0f0';
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        logMessage(`📥 Received: ${data.type} - ${JSON.stringify(data.data || data, null, 2)}`, 'incoming');
+                    } catch (e) {
+                        logMessage(`📥 Raw: ${event.data}`, 'incoming');
+                    }
+                };
+                
+                ws.onclose = function(event) {
+                    logMessage(`❌ Connection closed: ${event.reason || 'Unknown reason'}`, 'incoming');
+                    document.getElementById('status').textContent = 'Disconnected';
+                    document.getElementById('status').style.color = '#f00';
+                };
+                
+                ws.onerror = function(error) {
+                    logMessage(`❌ WebSocket error: ${error.message}`, 'incoming');
+                };
+                
+            } catch (error) {
+                logMessage(`❌ Connection failed: ${error.message}`, 'incoming');
+            }
+        }
+        
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                logMessage('Disconnected from server', 'incoming');
+            }
+        }
+        
+        function sendAgentCommand() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                logMessage('❌ Not connected to server', 'outgoing');
+                return;
+            }
+            
+            const command = document.getElementById('commandSelect').value;
+            const agentId = document.getElementById('agentId').value;
+            const taskInput = document.getElementById('taskInput').value;
+            
+            let message = {
+                type: 'agent_command',
+                data: {
+                    command: command
+                }
+            };
+            
+            if (command === 'get_agent_metadata' || command === 'execute_agent_task') {
+                message.data.params = { agentId: agentId };
+            }
+            
+            if (command === 'execute_agent_task') {
+                message.data.params.task = taskInput;
+                message.data.params.inputData = { text: "Sample input data for testing" };
+            }
+            
+            ws.send(JSON.stringify(message));
+            logMessage(`📤 Sent: ${command} for agent ${agentId}`, 'outgoing');
+        }
+        
+        function sendPing() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                logMessage('❌ Not connected to server', 'outgoing');
+                return;
+            }
+            
+            const message = {
+                type: 'ping',
+                data: {}
+            };
+            
+            ws.send(JSON.stringify(message));
+            logMessage('📤 Sent: ping', 'outgoing');
+        }
+        
+        // Auto-connect on page load
+        window.onload = function() {
+            setTimeout(connectWebSocket, 1000);
+        };
+    </script>
+</body>
+</html>
